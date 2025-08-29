@@ -1,5 +1,7 @@
 
-# urgent 2026 challenge (track 2: speech quality assessment)
+# urgent 2026 challenge (track 2)
+
+This track focuses on predicting the Mean Opinion Score (MOS) of speech processed by **speech enhancement systems**.
 
 ## Data
 
