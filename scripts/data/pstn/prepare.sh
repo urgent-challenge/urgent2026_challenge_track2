@@ -26,10 +26,10 @@ fi
 
 mkdir -p ${db}/data data/pstn
 
-if [ ! -e data/pstn/train.jsonl ]; then
+if [ ! -e data/pstn/train/wav.scp ]; then
     scripts/data/pstn/data_prep.py \
         --original-path "${db}/pstn_train/pstn_train.csv" --wavdir "${db}/pstn_train" --setname "train" --out "${db}/data/pstn_train.csv" --seed 1337 --dev_ratio 0.0
-    scripts/data/csv2jsonl.py "${db}/data/pstn_train.csv" "data/pstn/train.jsonl"
+    scripts/data/csv2scps.py "${db}/data/pstn_train.csv" "data/pstn/train"
 fi
 
 

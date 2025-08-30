@@ -53,7 +53,7 @@ if __name__ == "__main__":
                 {
                     "wav_path": wav_path,
                     "system_id": system_id,
-                    "sample_id": sample_id,
+                    "sample_id": f"{system_id}_{sample_id}",
                     "score": float(score),
                     "listener_id": "",
                 }

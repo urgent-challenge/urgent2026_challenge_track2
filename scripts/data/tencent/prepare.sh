@@ -27,20 +27,20 @@ fi
 
 
 mkdir -p ${db}/data data/tencent
-if [ ! -e data/tencent/train.jsonl ]; then
+if [ ! -e data/tencent/train/wav.scp ]; then
     scripts/data/tencent/data_prep.py \
         --original-path "${db}/withoutReverberationTrainDevMOS.csv" "${db}/withReverberationTrainDevMOS.csv" \
         --wavdir "${db}" --out "${db}/data/tencent_train.csv" \
         --setname "train" --seed 1337
-    scripts/data/csv2jsonl.py "${db}/data/tencent_train.csv" "data/tencent/train.jsonl"
+    scripts/data/csv2scps.py "${db}/data/tencent_train.csv" "data/tencent/train"
 fi
 
-if [ ! -e data/tencent/dev.jsonl ]; then
+if [ ! -e data/tencent/dev/wav.scp ]; then
     scripts/data/tencent/data_prep.py \
         --original-path "${db}/withoutReverberationTrainDevMOS.csv" "${db}/withReverberationTrainDevMOS.csv" \
         --wavdir "${db}" --out "${db}/data/tencent_dev.csv" \
         --setname "dev" --seed 1337
-    scripts/data/csv2jsonl.py "${db}/data/tencent_dev.csv" "data/tencent/dev.jsonl"
+    scripts/data/csv2scps.py "${db}/data/tencent_dev.csv" "data/tencent/dev"
 fi
 
 echo "===== Finished preparing [Tencent] dataset ====="

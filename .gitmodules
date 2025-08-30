@@ -1,0 +1,3 @@
+[submodule "local/build_dataset/NISQA"]
+	path = local/build_dataset/NISQA
+	url = https://github.com/gabrielmittag/NISQA.git

@@ -9,7 +9,19 @@ __set_seed4: !apply:torch.cuda.manual_seed_all [!ref <seed>]
 
 metrics:
     mos:
-        min: 0.0
+        min: 1.0
+        max: 5.0
+    dnsmos:
+        min: 1.0
+        max: 5.0
+    scoreq:
+        min: 1.0
+        max: 5.0
+    utmos:
+        min: 1.0
+        max: 5.0
+    nisqa:
+        min: 1.0
         max: 5.0
 
 trainer:

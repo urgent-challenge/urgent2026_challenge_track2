@@ -88,7 +88,7 @@ def main():
 
     # download pre-calculated text
     if args.use_precalculated_text:
-        textpath = os.path.join("downloads", "text")
+        textpath = os.path.join(os.path.dirname(args.original_path), "text")
         if not os.path.isfile(textpath):
             os.makedirs("downloads", exist_ok=True)
             os.system(

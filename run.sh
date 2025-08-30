@@ -3,7 +3,6 @@ db=/mnt/bn/wangwei-nas-lq-03/datasets/urgent26
 
 # following datasets are redistributable, served with huggingface
 datasets="tencent somos tmhint-qi chime-7-udase-eval tcd-voip ttsds2"
-# ttsds2
 
 # following datasets are not redistributable, we use the original links to download them, you might experience network issues
 datasets="${datasets} pstn nisqa"

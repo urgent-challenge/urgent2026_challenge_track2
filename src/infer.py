@@ -55,8 +55,6 @@ if __name__ == "__main__":
         if not args.config.is_file():
             raise ValueError("No config file is found for the checkpoint, please specify with --config")
 
-    if args.outdir is None:
-        args.outdir = args.ckpt.parent / "infer" / args.data.stem
     args.outdir.mkdir(parents=True, exist_ok=True)
 
     with open(args.config) as f:
@@ -77,7 +75,7 @@ if __name__ == "__main__":
             f.write(json.dumps(item_dict, ensure_ascii=False))
         dataloader = init_dataloader(Path(path), **config["dataloader"], is_train=False)
 
-    state_dict = torch.load(args.ckpt, map_location="cpu")["model_state_dict"]
+    state_dict = torch.load(args.ckpt, map_location="cpu")["model"]
     model = config["model"]
     model.load_state_dict(state_dict)
 

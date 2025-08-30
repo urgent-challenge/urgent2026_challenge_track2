@@ -39,20 +39,20 @@ if [ $num_files -ne 7106 ]; then
 fi
 
 mkdir -p ${db}/data data/bvcc
-if [ ! -e data/bvcc/train.jsonl ]; then
+if [ ! -e data/bvcc/train/wav.scp ]; then
     scripts/data/bvcc/data_prep.py --generate-listener-id \
         --original-path "${db}/main/DATA/sets/TRAINSET" --wavdir "${db}/main/DATA/wav" --out "${db}/data/bvcc_train.csv"
-    scripts/data/csv2jsonl.py "${db}/data/bvcc_train.csv" "data/bvcc/train.jsonl"
+    scripts/data/csv2scps.py "${db}/data/bvcc_train.csv" "data/bvcc/train"
 fi
-if [ ! -e data/bvcc/dev.jsonl ]; then
+if [ ! -e data/bvcc/dev/wav.scp ]; then
     scripts/data/bvcc/data_prep.py --generate-listener-id \
         --original-path "${db}/main/DATA/sets/DEVSET" --wavdir "${db}/main/DATA/wav" --out "${db}/data/bvcc_dev.csv"
-    scripts/data/csv2jsonl.py "${db}/data/bvcc_dev.csv" "data/bvcc/dev.jsonl"
+    scripts/data/csv2scps.py "${db}/data/bvcc_dev.csv" "data/bvcc/dev"
 fi
-if [ ! -e data/bvcc/test.jsonl ]; then
+if [ ! -e data/bvcc/test/wav.scp ]; then
     scripts/data/bvcc/data_prep.py --generate-listener-id \
         --original-path "${db}/main/DATA/sets/TESTSET" --wavdir "${db}/main/DATA/wav" --out "${db}/data/bvcc_test.csv"
-    scripts/data/csv2jsonl.py "${db}/data/bvcc_test.csv" "data/bvcc/test.jsonl"
+    scripts/data/csv2scps.py "${db}/data/bvcc_test.csv" "data/bvcc/test"
 fi
 
 echo "===== Finished preparing [BVCC] dataset ====="

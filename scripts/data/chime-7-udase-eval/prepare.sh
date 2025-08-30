@@ -23,10 +23,10 @@ fi
 
 mkdir -p ${db}/data data/chime-7-udase-eval
 
-if [ ! -e data/chime-7-udase-eval/test.jsonl ]; then
+if [ ! -e data/chime-7-udase-eval/test/wav.scp ]; then
     scripts/data/chime-7-udase-eval/data_prep.py \
         --original-path "${db}/listening_test/MOS_results_listening_test.csv" --wavdir "${db}/listening_test/data" --out "${db}/data/chime-7-udase-eval_test.csv"
-    scripts/data/csv2jsonl.py "${db}/data/chime-7-udase-eval_test.csv" "data/chime-7-udase-eval/test.jsonl"
+    scripts/data/csv2scps.py "${db}/data/chime-7-udase-eval_test.csv" "data/chime-7-udase-eval/test"
 fi
 
 echo "===== Finished preparing [CHiME-7-UDASE-EVAL] dataset ====="

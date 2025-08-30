@@ -25,10 +25,10 @@ fi
 
 mkdir -p ${db}/data data/ttsds2
 
-if [ ! -e data/ttsds2/train.jsonl ]; then
+if [ ! -e data/ttsds2/train/wav.scp ]; then
     scripts/data/ttsds2/data_prep.py \
         --original-path "${db}/subjective_results.csv" --wavdir "${db}" --out "${db}/data/ttsds2_train.csv" --seed 1337
-    scripts/data/csv2jsonl.py "${db}/data/ttsds2_train.csv" "data/ttsds2/train.jsonl"
+    scripts/data/csv2scps.py "${db}/data/ttsds2_train.csv" "data/ttsds2/train"
 fi
 
 echo "===== Finished preparing [TTSDS2] dataset ====="

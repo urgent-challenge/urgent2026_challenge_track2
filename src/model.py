@@ -107,22 +107,27 @@ class UniVersaExt(nn.Module):
         self, audio: float["b t"], audio_lengths: int["b"], metrics: dict[str, float["b"]], **kwargs
     ) -> tuple[torch.Tensor, dict[str, float]]:
         metric2pred = self.predict(audio, audio_lengths)
-        loss, info = 0, {}
+        loss, loss_detail = 0, {}
         for name in metric2pred.keys():
             pred = metric2pred[name]
-            label_mask: bool["b"] = ~torch.isnan(metrics[name])
-            if label_mask.any():
+            ref_mask: bool["b"] = ~torch.isnan(metrics[name])
+            if ref_mask.any():
                 loss_metric = (
                     self.metric2weight[name]
-                    * (F.mse_loss(pred, metrics[name], reduction="none") * label_mask).sum()
-                    / label_mask.sum()
+                    * (F.mse_loss(pred, metrics[name], reduction="none")[ref_mask]).sum()
+                    / ref_mask.sum()
                 )
-                info[f"loss_{name}"] = loss_metric.detach().cpu().item()
+                loss_detail[f"loss_{name}"] = loss_metric.detach().cpu().item()
                 loss += loss_metric
             else:
-                info[f"loss_{name}"] = float("nan")
+                loss_detail[f"loss_{name}"] = float("nan")
 
-        return loss, info
+        other = {
+            "info": loss_detail,
+            "metric2pred": metric2pred,
+        }
+
+        return loss, other
 
     def predict(self, audio: float["b t"], audio_lengths: int["b"], **kwargs) -> dict[str, torch.Tensor]:
         feats, feats_lengths = self.feature_extractor(audio, audio_lengths)

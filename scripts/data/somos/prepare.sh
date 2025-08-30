@@ -27,23 +27,23 @@ fi
 
 mkdir -p ${db}/data data/somos
 
-if [ ! -e data/somos/train.jsonl ]; then
+if [ ! -e data/somos/train/wav.scp ]; then
     echo "preparing data/somos/train.jsonl"
     scripts/data/somos/data_prep.py --generate-listener-id \
         --original-path "${db}/training_files/split1/clean/TRAINSET" --wavdir "${db}/audios" --out "${db}/data/somos_train.csv"
-    scripts/data/csv2jsonl.py "${db}/data/somos_train.csv" "data/somos/train.jsonl"
+    scripts/data/csv2scps.py "${db}/data/somos_train.csv" "data/somos/train"
 fi
-if [ ! -e data/somos/dev.jsonl ]; then
+if [ ! -e data/somos/dev/wav.scp ]; then
     echo "preparing data/somos/dev.jsonl"
     scripts/data/somos/data_prep.py \
         --original-path "${db}/training_files/split1/clean/VALIDSET" --wavdir "${db}/audios" --out "${db}/data/somos_dev.csv"
-    scripts/data/csv2jsonl.py "${db}/data/somos_dev.csv" "data/somos/dev.jsonl"
+    scripts/data/csv2scps.py "${db}/data/somos_dev.csv" "data/somos/dev"
 fi
-if [ ! -e data/somos/test.jsonl ]; then
+if [ ! -e data/somos/test/wav.scp ]; then
     echo "preparing data/somos/test.jsonl"
     scripts/data/somos/data_prep.py \
         --original-path "${db}/training_files/split1/clean/TESTSET" --wavdir "${db}/audios" --out "${db}/data/somos_test.csv"
-    scripts/data/csv2jsonl.py "${db}/data/somos_test.csv" "data/somos/test.jsonl"
+    scripts/data/csv2scps.py "${db}/data/somos_test.csv" "data/somos/test"
 fi
 
 echo "===== Finished preparing [SOMOS] dataset ====="

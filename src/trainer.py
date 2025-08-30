@@ -5,6 +5,7 @@ import math
 from pathlib import Path
 
 import torch
+import torch.distributed as dist
 from accelerate import Accelerator
 from accelerate.utils import DistributedDataParallelKwargs
 from ema_pytorch import EMA
@@ -84,7 +85,7 @@ class Trainer:
             return
 
         checkpoint = dict(
-            mode=self.accelerator.unwrap_model(self.model).state_dict(),
+            model=self.accelerator.unwrap_model(self.model).state_dict(),
             optimizer=self.optimizer.state_dict(),
             ema_model=self.ema_model.state_dict(),
             scheduler=self.scheduler.state_dict(),
@@ -194,7 +195,8 @@ class Trainer:
 
             for batch in current_dataloader:
                 with self.accelerator.accumulate(self.model):
-                    loss, info = self.model(**batch)
+                    loss, other = self.model(**batch)
+                    info = other.get("info", {})
                     self.accelerator.backward(loss)
 
                     if self.grad_norm > 0 and self.accelerator.sync_gradients:
@@ -237,26 +239,38 @@ class Trainer:
     def cv(self, cv_dataloader: DataLoader):
         self.model.eval()
         metric2preds = {}
-        metric2labels = {}
+        metric2refs = {}
         for batch in tqdm(cv_dataloader, desc="Validation", disable=not self.accelerator.is_local_main_process):
-            batch_metric2preds = self.model.predict(**batch)
+            loss, other = self.model(**batch)
+            batch_metric2preds = other.get("metric2pred", {})
             for name in batch_metric2preds.keys():
                 if name not in metric2preds:
                     metric2preds[name] = []
-                    metric2labels[name] = []
+                    metric2refs[name] = []
                 preds = batch_metric2preds[name].detach().cpu().tolist()
-                labels = batch["metrics"][name].detach().cpu().tolist()
-                for pred, label, sample_id, system_id in zip(preds, labels, batch["sample_ids"], batch["system_ids"]):
+                refs = batch["metrics"][name].detach().cpu().tolist()
+                for pred, ref, sample_id, system_id in zip(preds, refs, batch["sample_ids"], batch["system_ids"]):
                     metric2preds[name].append({"sample_id": sample_id, "system_id": system_id, "value": pred})
-                    metric2labels[name].append({"sample_id": sample_id, "system_id": system_id, "value": label})
+                    metric2refs[name].append({"sample_id": sample_id, "system_id": system_id, "value": ref})
 
+        self.accelerator.wait_for_everyone()
+        info = {}
         for name in metric2preds.keys():
-            metric2preds[name] = self.accelerator.gather(metric2preds[name])
-            metric2labels[name] = self.accelerator.gather(metric2labels[name])
-        metric2corr = {}
-        for name in metric2preds.keys():
-            corr = calculate_metrics(metric2preds[name], metric2labels[name])
-            for mode in ["utt", "sys"]:
-                for key, value in corr[mode].items():
-                    metric2corr[f"{name}_{mode}_{key}"] = value
-        return metric2corr
+            if not self.accelerator.is_main_process:
+                dist.gather_object(metric2preds[name], dst=0)
+                dist.gather_object(metric2refs[name], dst=0)
+                continue
+
+            gathered = [None] * self.accelerator.num_processes
+            dist.gather_object(metric2preds[name], gathered, dst=self.accelerator.process_index)
+            metric2preds[name] = [item for lst in gathered for item in lst]
+            dist.gather_object(metric2refs[name], gathered, dst=self.accelerator.process_index)
+            metric2refs[name] = [item for lst in gathered for item in lst]
+            info = other.get("info", {})
+            info["loss"] = loss.detach().item()
+            for name in metric2preds.keys():
+                corr = calculate_metrics(metric2preds[name], metric2refs[name])
+                for mode in ["utt", "sys"]:
+                    for key, value in corr[mode].items():
+                        info[f"{mode}_{key}_{name}"] = value
+        return info

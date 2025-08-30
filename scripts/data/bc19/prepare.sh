@@ -37,21 +37,25 @@ if [ $num_files -ne 1352 ]; then
     exit 1
 fi
 
+
 mkdir -p ${db}/data data/bc19
-if [ ! -e data/bc19/train.jsonl ]; then
+
+if [ ! -f data/bc19/train/wav.scp ]; then
     scripts/data/bc19/data_prep.py \
         --original-path "${db}/ood/DATA/sets/TRAINSET" --wavdir "${db}/ood/DATA/wav" --out "${db}/data/bc19_train.csv"
-    scripts/data/csv2jsonl.py "${db}/data/bc19_train.csv" "data/bc19/train.jsonl"
+    scripts/data/csv2scps.py "${db}/data/bc19_train.csv" "data/bc19/train"
 fi
-if [ ! -e data/bc19/dev.jsonl ]; then
+
+if [ ! -f data/bc19/dev/wav.scp ]; then
     scripts/data/bc19/data_prep.py \
         --original-path "${db}/ood/DATA/sets/DEVSET" --wavdir "${db}/ood/DATA/wav" --out "${db}/data/bc19_dev.csv"
-    scripts/data/csv2jsonl.py "${db}/data/bc19_dev.csv" "data/bc19/dev.jsonl"
+    scripts/data/csv2scps.py "${db}/data/bc19_dev.csv" "data/bc19/dev"
 fi
-if [ ! -e data/bc19/test.jsonl ]; then
+
+if [ ! -f data/bc19/test/wav.scp ]; then
     scripts/data/bc19/data_prep.py \
         --original-path "${db}/ood/DATA/sets/TESTSET" --wavdir "${db}/ood/DATA/wav" --out "${db}/data/bc19_test.csv"
-    scripts/data/csv2jsonl.py "${db}/data/bc19_test.csv" "data/bc19/test.jsonl"
+    scripts/data/csv2scps.py "${db}/data/bc19_dev.csv" "data/bc19/test"
 fi
 
 echo "===== Finished preparing [BC19] dataset ====="

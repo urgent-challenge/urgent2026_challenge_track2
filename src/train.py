@@ -14,10 +14,10 @@ def get_args():
     parser.add_argument("--config", required=True, type=Path, help="path to config file yaml")
     parser.add_argument("--train-data", required=True, type=Path, nargs="+", help="path to jsonl files for training")
     parser.add_argument("--cv-data", required=True, type=Path, nargs="+", help="path to jsonl files for vadidation")
+    parser.add_argument("--exp", required=True, type=Path, default=None)
     parser.add_argument(
         "--pretrained-ckpt", type=Path, help="path to model checkpoint to initialize from", default=None
     )
-    parser.add_argument("--exp", type=Path, default=None)
     parser.add_argument("--num-workers", default=4, type=int, help="num of subprocess workers for reading")
     parser.add_argument("--prefetch", default=100, type=int, help="prefetch number")
     args = parser.parse_args()
@@ -30,27 +30,16 @@ if __name__ == "__main__":
     with open(args.config) as f:
         config = load_hyperpyyaml(f)
 
-    if args.exp is None:
-        exp_name = (
-            args.config.stem
-            + f"_tr_{'_'.join(path.parent.stem + '_' + path.stem for path in args.train_data)}"
-            + f"_cv_{'_'.join(path.parent.stem + '_' + path.stem for path in args.cv_data)}"
-            + f"_metrics_{'_'.join(list(sorted(config['metrics'].keys())))}"
-            + f"_seed_{config['seed']}"
-        )
-        exp_dir = Path("./exp") / exp_name
-    else:
-        exp_dir = args.exp
-    exp_dir.mkdir(parents=True, exist_ok=True)
+    args.exp.mkdir(parents=True, exist_ok=True)
 
-    shutil.copy(args.config, exp_dir / "config.yaml")
+    shutil.copy(args.config, args.exp / "config.yaml")
     config["dataloader"] = override(config["dataloader"], num_workers=args.num_workers, prefetch=args.prefetch)
     train_dataloader = init_dataloader(args.train_data, **config["dataloader"], is_train=True)
     cv_dataloader = init_dataloader(args.cv_data, **config["dataloader"], is_train=False)
 
     trainer = Trainer(
         model=config["model"],
-        exp_dir=exp_dir,
+        exp_dir=args.exp,
         pretrained_ckpt=args.pretrained_ckpt,
         **config["trainer"],
     )

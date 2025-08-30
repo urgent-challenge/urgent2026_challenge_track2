@@ -39,34 +39,35 @@ def override(d: dict, **kwargs):
     return d
 
 
-def calculate_metrics(preds: list[dict], labels: list[dict]) -> dict[str, dict[str, float]]:
+def calculate_metrics(preds: list[dict], refs: list[dict]) -> dict[str, dict[str, float]]:
     """
     preds: list of {"sample_id": str, "system_id": str, "value": float}
     lables: list of {"sample_id": str, "system_id": str, "value": float}
     """
     df_pred = pd.DataFrame(preds).rename(columns={"value": "pred"})
-    df_label = pd.DataFrame(labels).rename(columns={"value": "label"})
+    df_ref = pd.DataFrame(refs).rename(columns={"value": "ref"})
 
-    df_pred = df_pred.merge(df_label, on=["sample_id", "system_id"], how="left")
-    if df_pred["label"].isna().any():
-        missing_rows = df_pred[df_pred["label"].isna()]
-        raise ValueError(f"Missing labels for some predictions:\n{missing_rows}")
+    df_pred = df_pred.merge(df_ref, on=["sample_id", "system_id"], how="left")
+    if df_pred["ref"].isna().any():
+        missing_rows = df_pred[df_pred["ref"].isna()]
+        raise ValueError(f"Missing refs for some predictions:\n{missing_rows}")
 
-    utt_pred = df_pred["pred"].to_numpy(dtype=float)
-    utt_label = df_pred["label"].to_numpy(dtype=float)
+    utt_pred = df_pred.sort_values(by=["sample_id"])["pred"].to_numpy(dtype=float)
+    utt_ref = df_pred.sort_values(by=["sample_id"])["ref"].to_numpy(dtype=float)
 
-    sys_df = df_pred.groupby("system_id", as_index=False).agg(pred=("pred", "mean"), label=("label", "mean"))
-    sys_pred = sys_df["pred"].to_numpy(dtype=float)
-    sys_label = sys_df["label"].to_numpy(dtype=float)
+    sys_df = df_pred.groupby("system_id", as_index=False).agg(pred=("pred", "mean"), ref=("ref", "mean"))
 
-    def metrics(preds: float["b"], labels: float["b"]) -> dict[str, float]:
-        mse = np.mean((preds - labels) ** 2)
-        lcc = np.corrcoef(preds, labels)[0, 1]
-        srcc = scipy.stats.spearmanr(preds, labels).statistic
-        ktau = scipy.stats.kendalltau(preds, labels).statistic
+    sys_pred = sys_df.sort_values(by=["system_id"])["pred"].to_numpy(dtype=float)
+    sys_ref = sys_df.sort_values(by=["system_id"])["ref"].to_numpy(dtype=float)
+
+    def metrics(preds: float["b"], refs: float["b"]) -> dict[str, float]:
+        mse = np.mean((preds - refs) ** 2)
+        lcc = np.corrcoef(preds, refs)[0, 1]
+        srcc = scipy.stats.spearmanr(preds, refs).statistic
+        ktau = scipy.stats.kendalltau(preds, refs).statistic
         return {"mse": mse, "lcc": lcc, "srcc": srcc, "ktau": ktau}
 
-    return {"utt": metrics(utt_pred, utt_label), "sys": metrics(sys_pred, sys_label)}
+    return {"utt": metrics(utt_pred, utt_ref), "sys": metrics(sys_pred, sys_ref)}
 
 
 # https://github.com/facebookresearch/fairseq2/blob/077ac04e89a4ebfdc0691ee0bdb84883391e8c2a/src/fairseq2/nn/utils/grad.py#L54

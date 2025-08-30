@@ -29,20 +29,20 @@ fi
 
 mkdir -p ${db}/data data/tmhint-qi
 
-if [ ! -e data/tmhint-qi/train.jsonl ]; then
+if [ ! -e data/tmhint-qi/train/wav.scp ]; then
     scripts/data/tmhint-qi/data_prep.py \
         --original-path "${db}/raw_data.csv" --wavdir "${db}/train" --setname "train" --out "${db}/data/tmhintqi_train.csv" --seed 1337
-    scripts/data/csv2jsonl.py "${db}/data/tmhintqi_train.csv" "data/tmhint-qi/train.jsonl"
+    scripts/data/csv2scps.py "${db}/data/tmhintqi_train.csv" "data/tmhint-qi/train"
 fi
-if [ ! -e data/tmhint-qi/dev.jsonl ]; then
+if [ ! -e data/tmhint-qi/dev/wav.scp ]; then
     scripts/data/tmhint-qi/data_prep.py \
         --original-path "${db}/raw_data.csv" --wavdir "${db}/train" --setname "dev" --out "${db}/data/tmhintqi_dev.csv" --seed 1337
-    scripts/data/csv2jsonl.py "${db}/data/tmhintqi_dev.csv" "data/tmhint-qi/dev.jsonl"
+    scripts/data/csv2scps.py "${db}/data/tmhintqi_dev.csv" "data/tmhint-qi/dev"
 fi
-if [ ! -e data/tmhint-qi/test.jsonl ]; then
+if [ ! -e data/tmhint-qi/test/wav.scp ]; then
     scripts/data/tmhint-qi/data_prep.py \
         --original-path "${db}/raw_data.csv" --wavdir "${db}/test" --setname "test" --out "${db}/data/tmhintqi_test.csv" --seed 1337
-    scripts/data/csv2jsonl.py "${db}/data/tmhintqi_test.csv" "data/tmhint-qi/test.jsonl"
+    scripts/data/csv2scps.py "${db}/data/tmhintqi_test.csv" "data/tmhint-qi/test"
 fi
 
 echo "===== Finished preparing [TMHINTQI] dataset ====="

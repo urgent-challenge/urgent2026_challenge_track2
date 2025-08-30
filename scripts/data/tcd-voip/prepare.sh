@@ -30,10 +30,10 @@ fi
 
 
 mkdir -p ${db}/data data/tcd-voip
-if [ ! -e data/tcd-voip/train.jsonl ]; then
+if [ ! -e data/tcd-voip/train/wav.scp ]; then
     scripts/data/tcd-voip/data_prep.py \
         --xlsx "${db}/mos.xlsx" --wavdir "${db}/wav" --out "${db}/data/tcd-voip_train.csv"
-    scripts/data/csv2jsonl.py "${db}/data/tcd-voip_train.csv" "data/tcd-voip/train.jsonl"
+    scripts/data/csv2scps.py "${db}/data/tcd-voip_train.csv" "data/tcd-voip/train"
 fi
 
 echo "===== Finished preparing [TCD-VOIP] dataset ====="
