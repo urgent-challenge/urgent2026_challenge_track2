@@ -35,10 +35,10 @@ if __name__ == "__main__":
     utt2sys = read_scp(args.data / "utt2sys")
     utt2dur = read_scp(args.data / "utt2dur", value_type=float)
 
-    metric_to_utt2val = {}
+    metric_to_utt2score = {}
     for metric_scp in metric_scps:
         metric = metric_scp.stem
-        metric_to_utt2val[metric] = read_scp(metric_scp, value_type=lambda x: round(float(x), 4))
+        metric_to_utt2score[metric] = read_scp(metric_scp, value_type=lambda x: round(float(x), 4))
 
     with open(args.jsonl_path, "w") as jsonl_file:
         for uid in sorted(utt2audio_path.keys()):
@@ -50,9 +50,9 @@ if __name__ == "__main__":
                 "duration": utt2dur[uid],
                 "metrics": {},
             }
-            for metric, utt2val in metric_to_utt2val.items():
-                if uid in utt2val:
+            for metric, utt2score in metric_to_utt2score.items():
+                if uid in utt2score:
                     if "metrics" not in item:
                         item["metrics"] = {}
-                    item["metrics"][metric] = utt2val[uid]
+                    item["metrics"][metric] = utt2score[uid]
             jsonl_file.write(json.dumps(item) + "\n")

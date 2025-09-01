@@ -10,7 +10,7 @@ echo "===== Start preparing [BC19] dataset ====="
 
 # download dataset
 cwd=`pwd`
-if [ ! -e ${db}/bc19.done ]; then
+if [ ! -e ${db}/download.done ]; then
     mkdir -p ${db}
     pushd ${db}
     wget https://zenodo.org/records/6572573/files/ood.tar.gz
@@ -18,7 +18,7 @@ if [ ! -e ${db}/bc19.done ]; then
     # rm ood.tar.gz
     popd
     echo "Successfully finished download. Please follow the inside ${db}"
-    touch ${db}/bc19.done
+    touch ${db}/download.done
 else
     echo "Already exists. Skip download."
 fi
@@ -40,22 +40,22 @@ fi
 
 mkdir -p ${db}/data data/bc19
 
-if [ ! -f data/bc19/train/wav.scp ]; then
+if [ ! -f data/bc19/train/data.jsonl ]; then
     scripts/data/bc19/data_prep.py \
-        --original-path "${db}/ood/DATA/sets/TRAINSET" --wavdir "${db}/ood/DATA/wav" --out "${db}/data/bc19_train.csv"
-    scripts/data/csv2scps.py "${db}/data/bc19_train.csv" "data/bc19/train"
+        --original-path "${db}/ood/DATA/sets/TRAINSET" --wavdir "${db}/ood/DATA/wav" --out "${db}/data/train.csv"
+    scripts/data/csv2data.sh "${db}/data/train.csv" "data/bc19/train"
 fi
 
-if [ ! -f data/bc19/dev/wav.scp ]; then
+if [ ! -f data/bc19/dev/data.jsonl ]; then
     scripts/data/bc19/data_prep.py \
-        --original-path "${db}/ood/DATA/sets/DEVSET" --wavdir "${db}/ood/DATA/wav" --out "${db}/data/bc19_dev.csv"
-    scripts/data/csv2scps.py "${db}/data/bc19_dev.csv" "data/bc19/dev"
+        --original-path "${db}/ood/DATA/sets/DEVSET" --wavdir "${db}/ood/DATA/wav" --out "${db}/data/dev.csv"
+    scripts/data/csv2data.sh "${db}/data/dev.csv" "data/bc19/dev"
 fi
 
-if [ ! -f data/bc19/test/wav.scp ]; then
+if [ ! -f data/bc19/test/data.jsonl ]; then
     scripts/data/bc19/data_prep.py \
-        --original-path "${db}/ood/DATA/sets/TESTSET" --wavdir "${db}/ood/DATA/wav" --out "${db}/data/bc19_test.csv"
-    scripts/data/csv2scps.py "${db}/data/bc19_dev.csv" "data/bc19/test"
+        --original-path "${db}/ood/DATA/sets/TESTSET" --wavdir "${db}/ood/DATA/wav" --out "${db}/data/test.csv"
+    scripts/data/csv2data.sh "${db}/data/test.csv" "data/bc19/test"
 fi
 
 echo "===== Finished preparing [BC19] dataset ====="

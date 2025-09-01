@@ -9,7 +9,7 @@ db=$1
 echo "===== Start preparing [TTSDS2] dataset ====="
 # download dataset
 cwd=`pwd`
-if [ ! -e ${db}/ttsds2.done ]; then
+if [ ! -e ${db}/download.done ]; then
     mkdir -p ${db}
     pushd ${db}
     hf download  --local-dir . --repo-type dataset urgent-challenge/urgent26_track2_sqa ttsds2.zip
@@ -17,7 +17,7 @@ if [ ! -e ${db}/ttsds2.done ]; then
     # rm ttsds2.zip
     popd
     echo "Successfully finished download."
-    touch ${db}/ttsds2.done
+    touch ${db}/download.done
 else
     echo "Already exists. Skip download."
 fi
@@ -25,10 +25,10 @@ fi
 
 mkdir -p ${db}/data data/ttsds2
 
-if [ ! -e data/ttsds2/train/wav.scp ]; then
+if [ ! -e data/ttsds2/train/data.jsonl ]; then
     scripts/data/ttsds2/data_prep.py \
-        --original-path "${db}/subjective_results.csv" --wavdir "${db}" --out "${db}/data/ttsds2_train.csv" --seed 1337
-    scripts/data/csv2scps.py "${db}/data/ttsds2_train.csv" "data/ttsds2/train"
+        --original-path "${db}/subjective_results.csv" --wavdir "${db}" --out "${db}/data/train.csv" --seed 1337
+    scripts/data/csv2data.sh "${db}/data/train.csv" "data/ttsds2/train"
 fi
 
 echo "===== Finished preparing [TTSDS2] dataset ====="

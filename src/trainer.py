@@ -152,7 +152,7 @@ class Trainer:
         generator = torch.Generator()
         generator.manual_seed(seed)
 
-        self.optimizer = AdamW(self.model.parameters(), lr=self.learning_rate)
+        self.optimizer = AdamW([p for p in self.model.parameters() if p.requires_grad], lr=self.learning_rate)
         total_updates = math.ceil(len(train_dataloader) / self.grad_accumulation_steps) * self.epochs
         self.scheduler = get_linear_schedule_with_warmup(
             self.optimizer,
@@ -200,7 +200,11 @@ class Trainer:
                     self.accelerator.backward(loss)
 
                     if self.grad_norm > 0 and self.accelerator.sync_gradients:
-                        self.accelerator.clip_grad_norm_(self.model.parameters(), self.grad_norm)
+                        grad_norm = self.accelerator.clip_grad_norm_(self.model.parameters(), self.grad_norm)
+                        if torch.isnan(grad_norm) or torch.isinf(grad_norm):
+                            logger.warning("Gradient norm is NaN of INF. Skipping update.")
+                            self.optimizer.zero_grad()
+                            continue
 
                     self.optimizer.step()
                     self.scheduler.step()

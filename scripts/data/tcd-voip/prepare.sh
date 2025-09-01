@@ -9,7 +9,7 @@ db=$1
 echo "===== Start preparing [TCD-VOIP] dataset ====="
 
 # download dataset
-if [ ! -e ${db}/tcd-voip.done ]; then
+if [ ! -e ${db}/download.done ]; then
     mkdir -p ${db}
     pushd ${db}
     # gdown 1rHJN34vP-W8SJtjpNUnx5RIks3o5L5he
@@ -23,17 +23,17 @@ if [ ! -e ${db}/tcd-voip.done ]; then
     rm -r TCD-VOIP
     popd
     echo "Successfully finished download."
-    touch ${db}/tcd-voip.done
+    touch ${db}/download.done
 else
     echo "Already exists. Skip download."
 fi
 
 
 mkdir -p ${db}/data data/tcd-voip
-if [ ! -e data/tcd-voip/train/wav.scp ]; then
+if [ ! -e data/tcd-voip/train/data.jsonl ]; then
     scripts/data/tcd-voip/data_prep.py \
-        --xlsx "${db}/mos.xlsx" --wavdir "${db}/wav" --out "${db}/data/tcd-voip_train.csv"
-    scripts/data/csv2scps.py "${db}/data/tcd-voip_train.csv" "data/tcd-voip/train"
+        --xlsx "${db}/mos.xlsx" --wavdir "${db}/wav" --out "${db}/data/train.csv"
+    scripts/data/csv2data.sh "${db}/data/train.csv" "data/tcd-voip/train"
 fi
 
 echo "===== Finished preparing [TCD-VOIP] dataset ====="

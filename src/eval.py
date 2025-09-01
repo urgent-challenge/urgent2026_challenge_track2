@@ -4,13 +4,18 @@ from pathlib import Path
 
 from utils import calculate_metrics
 
+"""
+Example jsonl line for ref and pred:
+{"sample_id": "sys0001-utt0001", "system_id": "sys0001", "metrics": {"mos": 3.5, "lps": 0.8}}
+"""
+
 
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--ref", required=True, type=Path, help="path to ref jsonl file")
     parser.add_argument("--pred", required=True, type=Path, help="path to pred jsonl file")
-    parser.add_argument("--ref-metric", type=str, default="mos", help="metric in ref file")
-    parser.add_argument("--pred-metric", type=str, default="mos", help="metric in pred file")
+    parser.add_argument("--ref-metric", type=str, default="mos", help="metric key in ref file")
+    parser.add_argument("--pred-metric", type=str, default="mos", help="metric key in pred file")
 
     args = parser.parse_args()
     return args

@@ -24,9 +24,8 @@ class SQADataset(Dataset):
             datasets = [datasets]
 
         for dataset in datasets:
-            logging.info(f"Loading dataset: {dataset}")
             with open(dataset, "r") as f:
-                for line in tqdm(f):
+                for line in tqdm(f, desc=f"Loading {dataset}"):
                     self.entries.append(json.loads(line))
 
     def __len__(self):

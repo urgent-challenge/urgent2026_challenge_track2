@@ -19,12 +19,12 @@ if [ ! -e $data/utt2dur ]; then
     python local/build_dataset/get_utt2dur.py --wav-scp $data/wav.scp  --out-scp $data/utt2dur
 fi
 
-if [ ! -e $data/nisqa.scp ]; then
-    python local/build_dataset/compute_nisqa.py --wav-scp $data/wav.scp  --out-scp $data/nisqa.scp
+if [ ! -e $data/nisqa_mos.scp ]; then
+    python local/build_dataset/compute_nisqa_mos.py --wav-scp $data/wav.scp  --out-scp $data/nisqa_mos.scp
 fi
 
-if [ ! -e $data/dnsmos.scp ]; then
-    python local/build_dataset/compute_dnsmos.py --wav-scp $data/wav.scp --out-scp $data/dnsmos.scp
+if [ ! -e $data/dnsmos_ovrl.scp ]; then
+    python local/build_dataset/compute_dnsmos_ovrl.py --wav-scp $data/wav.scp --out-scp $data/dnsmos_ovrl.scp
 fi
 
 if [ ! -e $data/scoreq.scp ]; then
@@ -35,11 +35,7 @@ if [ ! -e $data/utmos.scp ]; then
     python local/build_dataset/compute_utmos.py --wav-scp $data/wav.scp --out-scp $data/utmos.scp
 fi
 
-if [ ! -e $data/utmos.scp ]; then
-    python local/build_dataset/compute_utmos.py --wav-scp $data/wav.scp --out-scp $data/utmos.scp
-fi
-
-python local/build_dataset/merge_metrics.py $data $data/data.jsonl
+python scripts/data/collect_metrics.py $data $data/data.jsonl
 
 
 echo "Done. time elapsed: ${SECONDS}s"

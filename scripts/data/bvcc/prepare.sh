@@ -10,7 +10,7 @@ echo "===== Start preparing [BVCC] dataset ====="
 
 # download dataset
 cwd=`pwd`
-if [ ! -e ${db}/main.done ]; then
+if [ ! -e ${db}/download.done ]; then
     mkdir -p ${db}
     pushd ${db}
     wget https://zenodo.org/records/6572573/files/main.tar.gz
@@ -18,7 +18,7 @@ if [ ! -e ${db}/main.done ]; then
     rm main.tar.gz
     popd
     echo "Successfully finished download. Please follow the instructions."
-    touch ${db}/main.done
+    touch ${db}/download.done
 else
     echo "Already exists. Skip download."
 fi
@@ -39,20 +39,20 @@ if [ $num_files -ne 7106 ]; then
 fi
 
 mkdir -p ${db}/data data/bvcc
-if [ ! -e data/bvcc/train/wav.scp ]; then
+if [ ! -e data/bvcc/train/data.jsonl ]; then
     scripts/data/bvcc/data_prep.py --generate-listener-id \
-        --original-path "${db}/main/DATA/sets/TRAINSET" --wavdir "${db}/main/DATA/wav" --out "${db}/data/bvcc_train.csv"
-    scripts/data/csv2scps.py "${db}/data/bvcc_train.csv" "data/bvcc/train"
+        --original-path "${db}/main/DATA/sets/TRAINSET" --wavdir "${db}/main/DATA/wav" --out "${db}/data/train.csv"
+    scripts/data/csv2data.sh "${db}/data/train.csv" "data/bvcc/train"
 fi
-if [ ! -e data/bvcc/dev/wav.scp ]; then
+if [ ! -e data/bvcc/dev/data.jsonl ]; then
     scripts/data/bvcc/data_prep.py --generate-listener-id \
-        --original-path "${db}/main/DATA/sets/DEVSET" --wavdir "${db}/main/DATA/wav" --out "${db}/data/bvcc_dev.csv"
-    scripts/data/csv2scps.py "${db}/data/bvcc_dev.csv" "data/bvcc/dev"
+        --original-path "${db}/main/DATA/sets/DEVSET" --wavdir "${db}/main/DATA/wav" --out "${db}/data/dev.csv"
+    scripts/data/csv2data.sh "${db}/data/dev.csv" "data/bvcc/dev"
 fi
-if [ ! -e data/bvcc/test/wav.scp ]; then
+if [ ! -e data/bvcc/test/data.jsonl ]; then
     scripts/data/bvcc/data_prep.py --generate-listener-id \
-        --original-path "${db}/main/DATA/sets/TESTSET" --wavdir "${db}/main/DATA/wav" --out "${db}/data/bvcc_test.csv"
-    scripts/data/csv2scps.py "${db}/data/bvcc_test.csv" "data/bvcc/test"
+        --original-path "${db}/main/DATA/sets/TESTSET" --wavdir "${db}/main/DATA/wav" --out "${db}/data/test.csv"
+    scripts/data/csv2data.sh "${db}/data/test.csv" "data/bvcc/test"
 fi
 
 echo "===== Finished preparing [BVCC] dataset ====="

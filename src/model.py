@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import math
 
 import torch
@@ -15,20 +16,23 @@ class SSLFeatureExtractor(nn.Module):
     def __init__(self, model_name: str, freeze: bool = True, gradient_scale: float = 0.1):
         super().__init__()
         self.model = AutoModel.from_pretrained(model_name)
-        self.weights = nn.Parameter(torch.randn(self.model.config.num_hidden_layers + 1))
+        self.weights = nn.Parameter(torch.zeros(self.model.config.num_hidden_layers + 1))
         self.freeze = freeze
         self.gradient_scale = gradient_scale
-        if freeze:
+        self.freeze = freeze
+        if self.freeze:
             for param in self.model.parameters():
                 param.requires_grad = False
 
     def forward(self, audio: float["b t"], audio_lengths: int["b"]):
         attn_mask = lens2mask(audio_lengths)
-        hidden_states = self.model(
-            input_values=audio, attention_mask=attn_mask, output_hidden_states=True
-        ).hidden_states
-        hidden_states = torch.stack(hidden_states, dim=0)  # [l, b, t, d]
-        hidden_states = scale_grad(hidden_states, self.gradient_scale)
+        context = contextlib.nullcontext() if not self.freeze else torch.no_grad()
+        with context:
+            hidden_states = self.model(
+                input_values=audio, attention_mask=attn_mask, output_hidden_states=True
+            ).hidden_states
+            hidden_states = torch.stack(hidden_states, dim=0)  # [l, b, t, d]
+            hidden_states = scale_grad(hidden_states, self.gradient_scale)
         output = hidden_states * rearrange(F.softmax(self.weights, dim=0), "l -> l 1 1 1")
         output = output.sum(dim=0)  # [b ,t ,d]
         output_lengths = self.model._get_feat_extract_output_lengths(audio_lengths)
@@ -95,6 +99,7 @@ class UniVersaExt(nn.Module):
             nn.LayerNorm(encoder_dim),
         )
         self.encoder = encoder
+
         self.metrics = metrics
         self.metric_proj = nn.Linear(encoder_dim, len(metrics))
         self.metric2idx = {name: i for i, name in enumerate(metrics.keys())}
@@ -114,13 +119,13 @@ class UniVersaExt(nn.Module):
             if ref_mask.any():
                 loss_metric = (
                     self.metric2weight[name]
-                    * (F.mse_loss(pred, metrics[name], reduction="none")[ref_mask]).sum()
+                    * (F.mse_loss(pred.float()[ref_mask], metrics[name].float()[ref_mask], reduction="none")).sum()
                     / ref_mask.sum()
                 )
                 loss_detail[f"loss_{name}"] = loss_metric.detach().cpu().item()
                 loss += loss_metric
-            else:
-                loss_detail[f"loss_{name}"] = float("nan")
+
+        loss /= len(loss_detail)
 
         other = {
             "info": loss_detail,
@@ -134,18 +139,10 @@ class UniVersaExt(nn.Module):
         feats = self.feat_proj(feats)
         padding_mask = lens2mask(feats_lengths)
         x = self.encoder(feats, src_key_padding_mask=(1 - padding_mask).bool()) * padding_mask.unsqueeze(-1)
+
         pooled = x.sum(dim=1) / feats_lengths.unsqueeze(-1)
         metric_logits = self.metric_proj(pooled)
         metric2pred: dict[str, float["b"]] = {
             name: self.metric2act[name](metric_logits[:, self.metric2idx[name]]) for name in self.metric2idx
         }
         return metric2pred
-
-    def build_param_groups(self, lr: float):
-        ssl_params = list(self.feature_extractor.model.parameters())
-        ssl_ids = set(map(id, ssl_params))
-        other_params = [p for p in self.parameters() if id(p) not in ssl_ids]
-        param_groups = [{"params": other_params, "lr": lr}]
-        if not self.feature_extractor.freeze:
-            param_groups.append({"params": ssl_params, "lr": lr * self.feature_extractor.gradient_scale})
-        return param_groups
