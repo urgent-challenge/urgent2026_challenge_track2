@@ -11,7 +11,7 @@ metrics:
     mos:
         min: 1.0
         max: 5.0
-    dnsmos:
+    dnsmos_ovrl:
         min: 1.0
         max: 5.0
     scoreq:
@@ -20,7 +20,7 @@ metrics:
     utmos:
         min: 1.0
         max: 5.0
-    nisqa:
+    nisqa_mos:
         min: 1.0
         max: 5.0
 
@@ -29,25 +29,24 @@ trainer:
     grad_norm: 1.0
     learning_rate: 3e-5
     save_per_updates: 1000
-    last_per_updates: 1000
-    num_warmup_updates: 1000
-    keep_last_n_checkpoints: 5
+    num_warmup_updates: 2500
+    keep_last_n_checkpoints: -1
     grad_accumulation_steps: 1
 
 dataloader:
     metrics: !ref <metrics>
     sample_rate: !ref <sample_rate>
-    batch_frame_per_gpu: 480000  # about 30 seconds per GPU if sample_rate is 16kHz
-    max_samples_per_gpu: 32 
-    num_workers: 4
-    prefetch: 20
+    batch_frame_per_gpu: 9600000  # about 400 seconds per GPU if sample_rate is 16kHz
+    max_samples_per_gpu: 128
+    num_workers: 8
+    prefetch: 50
     seed: !ref <seed>
     feature_extractor: !apply:transformers.AutoFeatureExtractor.from_pretrained [!ref <ssl_model_name> ]
 
-model: !new:src.model.UniVersaExt
-    feature_extractor: !new:src.model.SSLFeatureExtractor
+model: !new:urgent2026_sqa.model.UniVersaExt
+    feature_extractor: !new:urgent2026_sqa.model.SSLFeatureExtractor
         model_name: !ref <ssl_model_name>
-        freeze: false
+        freeze: true
     encoder: !new:torch.nn.TransformerEncoder
         encoder_layer: !new:torch.nn.TransformerEncoderLayer
             d_model: 768

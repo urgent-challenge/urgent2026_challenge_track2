@@ -7,7 +7,7 @@
 
 
 Predict the Mean Opinion Score (MOS) of speech processed by **speech enhancement (SE)** systems.
-This repo provides the official implementation/baseline derived from [Uni-VERSA-Ext](https://arxiv.org/abs/2506.12260) for URGENT 2026 Track 2.
+This repo provides the official implementation/baseline derived from [UniVERSA-Ext](https://arxiv.org/abs/2506.12260) for URGENT 2026 Track 2.
 
 ## Table of Contents
 
@@ -52,11 +52,11 @@ Play with the model in Colab:
 ```python
 from urgent2026_sqa.infer import infer_single, load_model
 
-model = load_model("vvwang/uni_versa_ext-wavlm_base_plus-5_metrics")
+model = load_model("vvwangvv/universa-ext_wavlm-base_5metric")
 
 # examples are from https://labsites.rochester.edu/air/projects/is2012/examples.html
-print(infer_single(model, "./assets/sp03.wav"))
-print(infer_single(model, "./assets/sp03_casino_sn5.wav"))
+print(infer_single(model, config, "./assets/sp03.wav"))
+print(infer_single(model, config, "./assets/sp03_casino_sn5.wav"))
 ```
 
 ---
@@ -75,16 +75,13 @@ This script fetches/organizes all datasets listed in the [Data](#data) section.
 
 ```bash
 accelerate launch urgent2026/train.py \
-  --config configs/uni_versa_ext.yaml \
-  --exp exp/uni_versa_ext \
+  --config configs/universa-ext.yaml \
+  --exp exp/universa-ext \
   --train-data "data/*/train/data.jsonl" \
   --cv-data "data/chime-7-udase-eval/test/data.jsonl"
 ```
 
-Notes:
-
-* `configs/uni_versa_ext.yaml` is a symlink/alias to `configs/uni_versa_ext-wavlm_base_plus-5_metrics.yaml`.
-* Training **auto-resumes** from the latest checkpoint in `--exp` if present.
+Training will auto-resume from the latest checkpoint in `--exp` if present.
 
 ---
 
@@ -95,9 +92,9 @@ For inference on single audio file, Follow the [Quickstart (Inference)](#quickst
 
 ```bash
 dataset="chime-7-udase-eval" python urgent2026_sqa/infer.py \
-  --ckpt "exp/uni_versa_ext/model_last.pt" \
+  --ckpt "exp/universa-ext/model_last.pt" \
   --data "data/${dataset}/test/data.jsonl" \
-  --outdir "exp/uni_versa_ext/infer/${dataset}"
+  --outdir "exp/universa_ext/infer/${dataset}"
 ```
 
 
@@ -105,7 +102,7 @@ dataset="chime-7-udase-eval" python urgent2026_sqa/infer.py \
 
 ```bash
 dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
-  --pred "exp/uni_versa_ext/infer/${dataset}/results.jsonl" \
+  --pred "exp/universa_ext/infer/${dataset}/results.jsonl" \
   --ref  "data/${dataset}/test/data.jsonl"
 ```
 

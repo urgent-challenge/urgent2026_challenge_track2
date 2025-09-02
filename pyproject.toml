@@ -4,9 +4,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "urgent2026_track2_sqa"
+name = "urgent2026_sqa"
 version = "0.1.0"
-description = "The official implementation of the Uni-Versa-Ext baseline for the ICASSP 2024 URGENT Track 2 Speech Quality Assessment Challenge."
+description = "The official implementation of the UniVERSA-Ext baseline for the ICASSP 2024 URGENT Track 2 Speech Quality Assessment Challenge."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
@@ -23,31 +23,13 @@ dependencies = [
 
 # Extras: install with pip install -e ".[dev]" (or ".[dev,docs]" for multiple)
 [project.optional-dependencies]
-train = [
-    "transformers",
-    "hyperpyyaml",
-    "torchaudio",
-    "einops",
-    "pandas",
-    "scipy",
-    "ema_pytorch",
-    "tensorboard",
-]
+train = ["pandas", "scipy", "tensorboard"]
 dev = [
-    "accelerate",
-    "transformers",
-    "hyperpyyaml",
-    "torchaudio",
-    "einops",
-    "pandas",
-    "scipy",
-    "ema_pytorch",
-    "tensorboard",
     "pytest>=8",
     "pytest-cov",
-    "ruff",         # linter/formatter
-    "mypy",         # type checking
-    "pre-commit",   # git hooks
+    "ruff",       # linter/formatter
+    "mypy",       # type checking
+    "pre-commit", # git hooks
 ]
 docs = ["mkdocs-material", "mkdocstrings[python]"]
 

@@ -1,0 +1,113 @@
+seed: 42
+sample_rate: 16000
+ssl_model_name: "microsoft/wavlm-base-plus"
+# set random seed, so that you may reproduce your result.
+__set_seed1: !apply:random.seed [!ref <seed>]
+__set_seed2: !apply:numpy.random.seed [!ref <seed>]
+__set_seed3: !apply:torch.manual_seed [!ref <seed>]
+__set_seed4: !apply:torch.cuda.manual_seed_all [!ref <seed>]
+
+metrics:
+    mos:
+        min: 1.0
+        max: 5.0
+    dnsmos_ovrl:
+        min: 1.0
+        max: 5.0
+    scoreq:
+        min: 1.0
+        max: 5.0
+    utmos:
+        min: 1.0
+        max: 5.0
+    nisqa_mos:
+        min: 1.0
+        max: 5.0
+    distill_mos:
+        min: 1.0
+        max: 5.0
+    sigmos_ovrl:
+        min: 1.0
+        max: 5.0
+    sigmos_col:
+        min: 1.0
+        max: 5.0
+    sigmos_disc:
+        min: 1.0
+        max: 5.0
+    sigmos_loud:
+        min: 1.0
+        max: 5.0
+    sigmos_reverb:
+        min: 1.0
+        max: 5.0
+    sigmos_sig:
+        min: 1.0
+        max: 5.0
+    sigmos_noise:
+        min: 1.0
+        max: 5.0
+    lps:
+        min: 0.0
+        max: 1.0
+    spksim:
+        min: -1.0
+        max: 1.0
+    sbert:
+        min: 0.0
+        max: 1.0
+    mcd:
+        min: 0.0
+        max: .inf
+    sdr:
+        min: -.inf
+        max: .inf
+    pesq:
+        min: 1.0
+        max: 4.5
+    pesqc2:
+        min: 1.0
+        max: 4.5
+    lsd:
+        min: 0.0
+        max: .inf
+    estoi:
+        min: 0.0
+        max: 1.0
+
+    
+
+trainer:
+    epochs: 10
+    grad_norm: 1.0
+    learning_rate: 3e-5
+    save_per_updates: 1000
+    num_warmup_updates: 2500
+    keep_last_n_checkpoints: -1
+    grad_accumulation_steps: 1
+
+dataloader:
+    metrics: !ref <metrics>
+    sample_rate: !ref <sample_rate>
+    batch_frame_per_gpu: 9600000  # about 400 seconds per GPU if sample_rate is 16kHz
+    max_samples_per_gpu: 128
+    num_workers: 8
+    prefetch: 50
+    seed: !ref <seed>
+    feature_extractor: !apply:transformers.AutoFeatureExtractor.from_pretrained [!ref <ssl_model_name> ]
+
+model: !new:urgent2026_sqa.model.UniVersaExt
+    feature_extractor: !new:urgent2026_sqa.model.SSLFeatureExtractor
+        model_name: !ref <ssl_model_name>
+        freeze: true
+    encoder: !new:torch.nn.TransformerEncoder
+        encoder_layer: !new:torch.nn.TransformerEncoderLayer
+            d_model: 768
+            nhead: 8
+            dim_feedforward: 2048
+            dropout: 0.1
+            activation: "relu"
+            batch_first: True
+        num_layers: 6
+    metrics: !ref <metrics>
+
