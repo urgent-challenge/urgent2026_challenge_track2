@@ -4,7 +4,7 @@
 Predict the Mean Opinion Score (MOS) of speech processed by **speech enhancement (SE)** systems.
 This repo provides the official implementation/baseline derived from [UniVERSA-Ext](https://arxiv.org/abs/2506.12260) for URGENT 2026 Track 2.
 
-## Table of Contents
+## 📑 Table of Contents
 
 * [Installation](#installation)
 * [Quickstart (Inference)](#quickstart-inference)
@@ -16,7 +16,7 @@ This repo provides the official implementation/baseline derived from [UniVERSA-E
 
 ---
 
-## Installation
+## ⚙️ Installation
 
 ```bash
 # Create and activate environment
@@ -32,16 +32,16 @@ pip install -e .
 
 ---
 
-## Quickstart (Inference)
+## 🚀 Quickstart (Inference)
 
-### Colab
+### 💻 Colab
 
 Play with the model in Colab:
 [https://colab.research.google.com/drive/1Y2OkPE0hGSG4XRj\_b7RsmWMVSg4KkhM7](https://colab.research.google.com/drive/1Y2OkPE0hGSG4XRj_b7RsmWMVSg4KkhM7)
 
-### Local
+### 🖥️ Local
 
-> **Security note**: We use **HyperPyYAML** for config loading. Treat configs as code: **do not** load model from untrusted sources.
+> 🔒 **Security note**: We use **HyperPyYAML** for config loading. Treat configs as code: **do not** load model from untrusted sources.
 
 
 ```python
@@ -56,9 +56,9 @@ print(infer_single(model, config, "./assets/sp03_casino_sn5.wav"))
 
 ---
 
-## Training
+## 🔬 Training
 
-### 1) Prepare datasets
+### 1️⃣ Prepare datasets
 
 ```bash
 bash scripts/prepare_data.sh </path/to/db>
@@ -66,10 +66,10 @@ bash scripts/prepare_data.sh </path/to/db>
 
 This script fetches/organizes all datasets listed in the [Data](#data) section.
 
-> NOTE: bvcc and bc19 datasets requires manual process after downloading
-> if you don't want to include them, comment the correspoding line in `scripts/data/prepare.sh`
+> ⚠️ NOTE: bvcc and bc19 datasets require manual processing after downloading.
+If you don't want to include them, comment out the corresponding line in scripts/data/prepare.sh.
 
-### 2) Launch training
+### 2️⃣ Launch training
 
 The following command train the UniVERSA-Ext with all prepared training datasets.
 ```bash
@@ -80,9 +80,9 @@ accelerate launch urgent2026/train.py \
   --cv-data "data/chime-7-udase-eval/test/data.jsonl"
 ```
 
-Training will auto-resume from the latest checkpoint.
+✅ Training will auto-resume from the latest checkpoint
 
-Distributed training and mixed precision is supported with `accelerate`, example:
+✅ Distributed training and mixed precision is supported with `accelerate`:
 ```bash
 accelerate launch --num_processes=<N> \
   --main_process_port <port> \
@@ -93,7 +93,7 @@ accelerate launch --num_processes=<N> \
 
 ---
 
-## Batch Inference & Evaluation
+## 📊 Batch Inference & Evaluation
 
 ### Batch inference
 For inference on single audio file, follow [Quickstart (Inference)](#quickstart-inference)
@@ -186,7 +186,7 @@ dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
 
 ---
 
-## Data
+## 📊 Data
 
 <table>
 <colgroup>
@@ -346,7 +346,7 @@ dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
 ---
 
 
-## Build Your Own Multi-Metric Dataset
+## 🛠️ Build Your Own Multi-Metric Dataset
 > 🚧 **Under Construction**  
 
 
@@ -354,7 +354,7 @@ dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
 pip install -e .[dev]
 ```
 
-## Citations
+## 📚 Citations
 
 If you use this code or datasets, please consider citing:
 
