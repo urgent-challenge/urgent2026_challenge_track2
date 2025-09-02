@@ -26,7 +26,7 @@ conda activate urgent2026-sqa
 # Install (minimal deps for inference)
 pip install -e .
 
-# For training, install extra dependencies (adjust to your pyproject):
+# For training, install extra dependencies
 # pip install -e .[train]
 ```
 
