@@ -80,15 +80,25 @@ accelerate launch urgent2026/train.py \
   --cv-data "data/chime-7-udase-eval/test/data.jsonl"
 ```
 
-Training will auto-resume from the latest checkpoint in `--exp` if present.
+Training will auto-resume from the latest checkpoint.
+
+Distributed training and mixed precision is supported with `accelerate`, example:
+```bash
+accelerate launch --num_processes=<N> \
+  --main_process_port <port> \
+  --mixed_precision=bf16 \
+  urgent2026/train.py \
+  ...
+```
 
 ---
 
 ## Batch Inference & Evaluation
 
 ### Batch inference
-For inference on single audio file, Follow the [Quickstart (Inference)](#quickstart-inference) 
+For inference on single audio file, follow [Quickstart (Inference)](#quickstart-inference)
 
+For batch inference:
 ```bash
 dataset="chime-7-udase-eval" python urgent2026_sqa/infer.py \
   --ckpt "exp/universa-ext/model_last.pt" \
@@ -96,7 +106,7 @@ dataset="chime-7-udase-eval" python urgent2026_sqa/infer.py \
   --outdir "exp/universa_ext/infer/${dataset}"
 ```
 
-This will genenerate a `results.jsonl` file and `{metric}.scp` files for all metrics in the outdir
+This will genenerate a `results.jsonl` file and `{metric}.scp` files for all metrics under the `--outdir`
 
 
 ### Evaluation
@@ -107,8 +117,7 @@ dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
   --ref  "data/${dataset}/test/data.jsonl"
 ```
 
-You may also want to evaluate metric by comparing annotated metrics (e.g. scoreq) vs mos
-
+You may also want to evaluate metric by comparing annotated metrics (e.g. scoreq) vs mos:
 ```bash
 dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
   --pred "data/${dataset}/test/data.jsonl" \
