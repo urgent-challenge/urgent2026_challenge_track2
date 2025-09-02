@@ -3,7 +3,6 @@
 > This repository is actively evolving. Expect breaking changes, incomplete docs, and frequent updates.
 
 
-
 # URGENT 2026 — Track 2 (Speech Quality Assessment)
 
 
@@ -55,8 +54,9 @@ from urgent2026_sqa.infer import infer_single, load_model
 
 model = load_model("vvwang/uni_versa_ext-wavlm_base_plus-5_metrics")
 
-print(infer_single(model, "./assets/gt.wav"))
-print(infer_single(model, "./assets/noisy.wav"))
+# examples are from https://labsites.rochester.edu/air/projects/is2012/examples.html
+print(infer_single(model, "./assets/sp03.wav"))
+print(infer_single(model, "./assets/sp03_casino_sn5.wav"))
 ```
 
 ---
