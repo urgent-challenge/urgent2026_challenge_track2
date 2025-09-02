@@ -11,7 +11,7 @@ import transformers
 from torch.utils.data import DataLoader, Dataset, Sampler
 from tqdm import tqdm
 
-from utils import mask2lens
+from urgent2026_sqa.utils import mask2lens
 
 
 class SQADataset(Dataset):

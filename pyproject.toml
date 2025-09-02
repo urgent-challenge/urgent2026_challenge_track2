@@ -12,7 +12,6 @@ requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [{ name = "Wei Wang", email = "wangweidmail0809@gmail.com" }]
 
-# Runtime deps (installed for all users)
 dependencies = [
     "torch",
     "torchaudio",
@@ -22,7 +21,6 @@ dependencies = [
     "einops",
 ]
 
-# Extras: install with pip install -e ".[dev]" (or ".[dev,docs]" for multiple)
 # Extras: install with pip install -e ".[dev]" (or ".[dev,docs]" for multiple)
 [project.optional-dependencies]
 train = [
@@ -53,10 +51,5 @@ dev = [
 ]
 docs = ["mkdocs-material", "mkdocstrings[python]"]
 
-# If you use import-packages auto-discovery:
-[tool.setuptools.packages.find]
-where = ["urgent2026_sqa"]
-
-# (Optional) If your code lives under src/
-# Remember to move your package into src/your_project_name/ and add:
-#   pip install -e .
+[tool.setuptools]
+packages = { find = { include = ["urgent2026_sqa*"] } }

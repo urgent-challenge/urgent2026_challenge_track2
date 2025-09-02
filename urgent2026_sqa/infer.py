@@ -10,9 +10,9 @@ import torchaudio
 from huggingface_hub import snapshot_download
 from hyperpyyaml import load_hyperpyyaml
 from tqdm import tqdm
-from utils import mask2lens, override
 
-from data import init_dataloader
+from urgent2026_sqa.data import init_dataloader
+from urgent2026_sqa.utils import mask2lens, override
 
 
 def load_model(checkpoint: Path, config: Optional[dict] = None):

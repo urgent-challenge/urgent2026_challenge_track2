@@ -2,7 +2,7 @@ import argparse
 import json
 from pathlib import Path
 
-from utils import calculate_metrics
+from urgent2026_sqa.utils import calculate_metrics
 
 """
 Example jsonl line for ref and pred:

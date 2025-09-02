@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from einops import rearrange
 from transformers import AutoModel
 
-from utils import lens2mask, scale_grad
+from urgent2026_sqa.utils import lens2mask, scale_grad
 
 
 class SSLFeatureExtractor(nn.Module):

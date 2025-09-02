@@ -12,7 +12,8 @@ from torch.optim import AdamW
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from transformers import get_linear_schedule_with_warmup
-from utils import calculate_metrics
+
+from urgent2026_sqa.utils import calculate_metrics
 
 logger = logging.getLogger(__name__)
 

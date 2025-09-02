@@ -3,10 +3,10 @@ import shutil
 from pathlib import Path
 
 from hyperpyyaml import load_hyperpyyaml
-
-from data import init_dataloader
 from trainer import Trainer
-from utils import override
+
+from urgent2026_sqa.data import init_dataloader
+from urgent2026_sqa.utils import override
 
 
 def get_args():
