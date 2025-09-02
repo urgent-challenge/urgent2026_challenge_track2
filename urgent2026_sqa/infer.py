@@ -1,13 +1,14 @@
 import argparse
 import json
 import logging
+import os
 from functools import partial
 from pathlib import Path
 from typing import Optional
 
 import torch
 import torchaudio
-from huggingface_hub import snapshot_download
+from huggingface_hub import hf_hub_download
 from hyperpyyaml import load_hyperpyyaml
 from tqdm import tqdm
 
@@ -15,16 +16,17 @@ from urgent2026_sqa.data import init_dataloader
 from urgent2026_sqa.utils import mask2lens, override
 
 
-def load_model(checkpoint: Path, config: Optional[dict] = None):
-    if not checkpoint.is_file():
+def load_model(checkpoint: Path | str, config: Optional[str | Path] = None):
+    if not os.path.isfile(checkpoint):
         logging.info(f"{checkpoint} is not a file, assume it's a huggingface hub repo id")
-        checkpoint = Path(snapshot_download(checkpoint.as_posix())) / "model.pt"
+        checkpoint, config = hf_hub_download(checkpoint, "model.pt"), hf_hub_download(checkpoint, "config.yaml")
+    checkpoint = Path(checkpoint)
 
     if config is None:
-        config_path = checkpoint.parent / "config.yaml"
-        if not config_path.is_file():
+        config = checkpoint.parent / "config.yaml"
+        if not config.is_file():
             raise ValueError("failed to find config.yaml")
-    with open(config_path) as f:
+    with open(config) as f:
         config = load_hyperpyyaml(f)
 
     state_dict = torch.load(checkpoint, map_location="cpu")["model"]
@@ -36,10 +38,11 @@ def load_model(checkpoint: Path, config: Optional[dict] = None):
 
 
 @torch.inference_mode()
-def infer(model, config: dict, data: Path, outdir: Path):
+def infer(model, config: dict, data: Path | str, outdir: Path):
     from accelerate import Accelerator
 
     accelerator = Accelerator()
+    data = Path(data)
     config["dataloader"] = override(
         config["dataloader"],
         num_workers=args.num_workers,
@@ -68,10 +71,11 @@ def infer(model, config: dict, data: Path, outdir: Path):
 
 
 @torch.inference_mode()
-def infer_single(model, config: dict, audio: torch.Tensor | Path, audio_sr: int = None):
+def infer_single(model, config: dict, audio: torch.Tensor | Path | str, audio_sr: int = None):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model.to(device)
-    if isinstance(audio, Path):
+    if isinstance(audio, Path) or isinstance(audio, str):
+        audio = Path(audio)
         audio, audio_sr = torchaudio.load(audio.as_posix())
     elif isinstance(audio, torch.Tensor):
         assert audio_sr is not None, "Please provide audio sample rate"
