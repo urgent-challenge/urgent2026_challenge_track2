@@ -1,0 +1,54 @@
+# pyproject.toml
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "urgent2026_track2_sqa"
+version = "0.1.0"
+description = "The official implementation of the Uni-Versa-Ext baseline for the ICASSP 2024 URGENT Track 2 Speech Quality Assessment Challenge."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Wei Wang", email = "wangweidmail0809@gmail.com" }]
+
+# Runtime deps (installed for all users)
+dependencies = [
+    "accelerate",
+    "transformers",
+    "hyperpyyaml",
+    "torchaudio",
+    "einops",
+    "pandas",
+    "scipy",
+    "ema_pytorch",
+    "tensorboard",
+]
+
+# Extras: install with pip install -e ".[dev]" (or ".[dev,docs]" for multiple)
+[project.optional-dependencies]
+dev = [
+    "accelerate",
+    "transformers",
+    "hyperpyyaml",
+    "torchaudio",
+    "einops",
+    "pandas",
+    "scipy",
+    "ema_pytorch",
+    "tensorboard",
+    "pytest>=8",
+    "pytest-cov",
+    "ruff",         # linter/formatter
+    "mypy",         # type checking
+    "pre-commit",   # git hooks
+]
+docs = ["mkdocs-material", "mkdocstrings[python]"]
+
+# If you use import-packages auto-discovery:
+[tool.setuptools.packages.find]
+where = ["urgent2026_sqa"]
+
+# (Optional) If your code lives under src/
+# Remember to move your package into src/your_project_name/ and add:
+#   pip install -e .
