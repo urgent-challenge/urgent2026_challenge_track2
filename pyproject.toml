@@ -23,7 +23,7 @@ dependencies = [
 
 # Extras: install with pip install -e ".[dev]" (or ".[dev,docs]" for multiple)
 [project.optional-dependencies]
-train = ["pandas", "scipy", "tensorboard"]
+train = ["pandas", "scipy", "tensorboard", "accelerate"]
 dev = [
     "pytest>=8",
     "pytest-cov",

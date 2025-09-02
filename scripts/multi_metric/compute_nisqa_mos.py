@@ -47,4 +47,4 @@ if __name__ == "__main__":
 
     with open(args.out_scp, "w") as metric_scp:
         for uid, score in scores:
-            metric_scp.write(f"{uid} {score:.4f}\n")
+            metric_scp.write(f"{uid} {score}\n")

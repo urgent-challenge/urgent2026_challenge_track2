@@ -254,8 +254,8 @@ class Trainer:
         if self.accelerator.is_main_process:
             info = other.get("info", {})
             info["loss"] = loss.detach().item()
-            for name in metric2preds.keys():
-                if name not in metric2refs:
+            for name in set(metric2preds.keys()) & set(metric2refs.keys()):
+                if any(math.isnan(item["value"]) for item in metric2refs[name] + metric2preds[name]):
                     continue
                 corr = calculate_metrics(metric2preds[name], metric2refs[name])
                 for mode in ["utt", "sys"]:
