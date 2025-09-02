@@ -13,7 +13,7 @@ if [ ! -e ${db}/download.done ]; then
     # wget -c https://zenodo.org/records/10418311/files/CHiME-7-UDASE-evaluation-data.zip
     hf download  --local-dir . --repo-type dataset urgent-challenge/urgent26_track2_sqa CHiME-7-UDASE-evaluation-data.zip
     unzip CHiME-7-UDASE-evaluation-data.zip
-    # rm CHiME-7-UDASE-evaluation-data.zip
+    rm CHiME-7-UDASE-evaluation-data.zip
     popd
     echo "Successfully finished download."
     touch ${db}/download.done

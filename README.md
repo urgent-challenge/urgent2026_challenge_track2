@@ -1,8 +1,3 @@
-> [!WARNING]
-> 🚧 **Under Construction**  
-> This repository is actively evolving. Expect breaking changes, incomplete docs, and frequent updates.
-
-
 # URGENT 2026 — Track 2 (Speech Quality Assessment)
 
 
@@ -71,28 +66,8 @@ bash scripts/prepare_data.sh </path/to/db>
 
 This script fetches/organizes all datasets listed in the [Data](#data) section.
 
-```bash
-db=$1
-
-if [ -z "${db}" ]; then
-    echo "Usage: $0 <rawdata-dir>"
-    exit 1
-fi
-
-# following datasets are automatically downloaded and prepared
-datasets="tencent somos tmhint-qi chime-7-udase-eval tcd-voip ttsds2 pstn nisqa urgent24-sqa urgent25-sqa"
-
-# following datasets require manual processing after downloading
-datasets="${datasets} bvcc bc19" 
-
-mkdir -p ${db}
-
-# download the pre-computed metrics into data/
-hf download --repo-type dataset urgent-challenge/urgent2026_sqa/urgent26_track2_sqa data .
-for dataset in ${datasets}; do
-    bash scripts/data/${dataset}/prepare.sh ${db}/${dataset}
-done
-```
+> NOTE: bvcc and bc19 datasets requires manual process after downloading
+> if you don't want to include them, comment the correspoding line in `scripts/data/prepare.sh`
 
 ### 2) Launch training
 
@@ -120,6 +95,8 @@ dataset="chime-7-udase-eval" python urgent2026_sqa/infer.py \
   --data "data/${dataset}/test/data.jsonl" \
   --outdir "exp/universa_ext/infer/${dataset}"
 ```
+
+This will genenerate a `results.jsonl` file and `{metric}.scp` files for all metrics in the outdir
 
 
 ### Evaluation
@@ -361,6 +338,8 @@ dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
 
 
 ## Build Your Own Multi-Metric Dataset
+> 🚧 **Under Construction**  
+
 
 ```bash
 pip install -e .[dev]

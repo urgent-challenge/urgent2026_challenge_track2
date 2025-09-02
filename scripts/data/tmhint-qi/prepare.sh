@@ -18,7 +18,7 @@ if [ ! -e ${db}/download.done ]; then
     rm -rf __MACOSX/
     mv TMHINTQI/* .
     rm -rf TMHINTQI
-    # rm TMHINTQI.zip
+    rm TMHINTQI.zip
     popd
     echo "Successfully finished download."
     touch ${db}/download.done

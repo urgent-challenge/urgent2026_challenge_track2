@@ -14,7 +14,7 @@ if [ ! -e ${db}/download.done ]; then
     pushd ${db}
     hf download  --local-dir . --repo-type dataset urgent-challenge/urgent26_track2_sqa ttsds2.zip
     unzip ttsds2.zip
-    # rm ttsds2.zip
+    rm ttsds2.zip
     popd
     echo "Successfully finished download."
     touch ${db}/download.done

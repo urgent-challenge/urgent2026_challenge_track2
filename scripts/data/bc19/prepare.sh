@@ -15,7 +15,7 @@ if [ ! -e ${db}/download.done ]; then
     pushd ${db}
     wget -c https://zenodo.org/records/6572573/files/ood.tar.gz
     tar zxvf ood.tar.gz
-    # rm ood.tar.gz
+    rm ood.tar.gz
     popd
     echo "Successfully finished download. Please follow the inside ${db}"
     touch ${db}/download.done

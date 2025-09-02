@@ -6,13 +6,17 @@ if [ -z "${db}" ]; then
 fi
 
 # following datasets are automatically downloaded and prepared
-datasets="tencent somos tmhint-qi chime-7-udase-eval tcd-voip ttsds2 pstn nisqa urgent24-sqa urgent25-sqa"
+datasets="tencent somos tmhint-qi chime-7-udase-eval tcd-voip ttsds2 pstn nisqa urgent2024-sqa urgent2025-sqa"
 
 # following datasets require manual processing after downloading
 datasets="${datasets} bvcc bc19" 
 
-hf download --repo-type dataset urgent-challenge/urgent26_track2_sqa data .
+if [ ! -d "./data" ]; then
+    hf download --repo-type dataset urgent-challenge/urgent26_track2_sqa data.zip --local-dir .
+    unzip data.zip
+    rm -f data.zip
+fi
 mkdir -p ${db}
-for dataset in ${datasets}; do
-    bash scripts/data/${dataset}/prepare.sh ${db}/${dataset}
+for dset in ${datasets}; do
+    bash scripts/data/${dset}/prepare.sh ${db}/${dset}
 done
