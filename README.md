@@ -6,13 +6,13 @@ This repo provides the official implementation/baseline derived from [UniVERSA-E
 
 ## 📑 Table of Contents
 
-* [Installation](#installation)
-* [Quickstart (Inference)](#quickstart-inference)
-* [Training](#training)
-* [Batch Inference & Evaluation](#batch-inference--evaluation)
-* [Data](#data)
-  * [Build Your Own multi-Metric Dataset](#build-your-own-multi-metric-dataset)
-* [Citations](#citations)
+* [Installation](#️-installation)
+* [Quickstart (Inference)](#-quickstart-inference)
+* [Training](#-training)
+* [Batch Inference & Evaluation](#-batch-inference--evaluation)
+* [Data](#-data)
+  * [Build Your Own multi-Metric Dataset](#️-build-your-own-multi-metric-dataset)
+* [Citations](#-citations)
 
 ---
 
