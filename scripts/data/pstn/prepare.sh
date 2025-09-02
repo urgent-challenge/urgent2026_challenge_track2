@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 # Copyright 2024 Wen-Chin Huang
 #  MIT License (https://opensource.org/licenses/MIT)
@@ -14,9 +14,8 @@ if [ ! -e ${db}/download.done ]; then
     mkdir -p ${db}
     pushd ${db}
     wget -c https://challenge.blob.core.windows.net/pstn/train.zip -O pstn.zip
-    # hf download  --local-dir . --repo-type dataset urgent-challenge/urgent26_track2_sqa pstn.zip
     unzip pstn.zip
-    # rm pstn.zip
+    rm pstn.zip
     popd
     echo "Successfully finished download."
     touch ${db}/download.done

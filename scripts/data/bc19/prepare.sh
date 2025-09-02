@@ -13,7 +13,7 @@ cwd=`pwd`
 if [ ! -e ${db}/download.done ]; then
     mkdir -p ${db}
     pushd ${db}
-    wget https://zenodo.org/records/6572573/files/ood.tar.gz
+    wget -c https://zenodo.org/records/6572573/files/ood.tar.gz
     tar zxvf ood.tar.gz
     # rm ood.tar.gz
     popd

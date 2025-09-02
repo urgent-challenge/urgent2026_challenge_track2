@@ -3,7 +3,8 @@ import argparse
 from pathlib import Path
 
 import pandas as pd
-import pyarrow.parquet as pq
+import torchaudio
+from datasets import load_dataset
 from tqdm import tqdm
 
 
@@ -19,19 +20,17 @@ def prepare_data(data: Path, split: str):
 
     items = []
     for phase in phases:
-        for parquet_file in (data / phase).glob("*.parquet"):
-            table = pq.read_table(parquet_file)
-            for row in tqdm(table.to_pylist(), desc=f"Processing {parquet_file}"):
-                submission_id, _, fileid = row["sample_id"].split("_")[-3:]
-                wav_file = data / phase / submission_id / f"{fileid}.flac"
-                wav_file.parent.mkdir(parents=True, exist_ok=True)
-
-                if not wav_file.exists():
-                    with open(wav_file, "wb") as f:
-                        f.write(row["audio"])
-                del row["audio"]
-                row["wav_path"] = wav_file.absolute().as_posix()
-                items.append(row)
+        for sample in tqdm(load_dataset("urgent-challenge/urgent2024-sqa", split=phase)):
+            submission_id, _, fileid = sample["sample_id"].split("_")[-3:]
+            wav_file = data / phase / submission_id / f"{fileid}.flac"
+            wav_file.parent.mkdir(parents=True, exist_ok=True)
+            if not wav_file.exists():
+                samples = sample["audio"].get_all_samples()
+                torchaudio.save(wav_file, samples.data, samples.sample_rate)
+            del sample["audio"]
+            sample["wav_path"] = wav_file.absolute().as_posix()
+            sample = {k: v for k, v in sample.items() if v is not None}
+            items.append(sample)
     return items
 
 

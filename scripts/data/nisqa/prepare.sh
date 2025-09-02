@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 # Copyright 2024 Wen-Chin Huang
 #  MIT License (https://opensource.org/licenses/MIT)
@@ -13,8 +13,7 @@ cwd=`pwd`
 if [ ! -e ${db}/download.done ]; then
     mkdir -p ${db}
     pushd ${db}
-    # wget -c https://depositonce.tu-berlin.de/bitstream/11303/13012.5/9/NISQA_Corpus.zip
-    hf download  --local-dir . --repo-type dataset urgent-challenge/urgent26_track2_sqa NISQA_Corpus.zip
+    wget -c https://depositonce.tu-berlin.de/bitstream/11303/13012.5/9/NISQA_Corpus.zip
     unzip NISQA_Corpus.zip
     rm -f NISQA_Corpus.zip
     mv NISQA_Corpus/* .

@@ -28,15 +28,18 @@ def load_model(checkpoint: Path, config: Optional[dict] = None):
     with open(config_path) as f:
         config = load_hyperpyyaml(f)
 
-    state_dict = torch.load(checkpoint, map_location="cpu")["model"]
+    state_dict = torch.load(checkpoint, map_location="cpu")["ema_model"]
+    state_dict = {k.removeprefix("ema_model."): v for k, v in state_dict.items() if k not in ["initted", "step"]}
+
     model = config["model"]
     model.load_state_dict(state_dict)
-    model = accelerator.prepare(model)
+    model.eval()
     return model, config
 
 
 @torch.inference_mode()
 def infer(model, config: dict, data: Path, outdir: Path):
+    accelerator = Accelerator()
     config["dataloader"] = override(
         config["dataloader"],
         num_workers=args.num_workers,
@@ -44,7 +47,7 @@ def infer(model, config: dict, data: Path, outdir: Path):
         batch_frame_per_gpu=args.batch_frames,
     )
     dataloader = init_dataloader(data, **config["dataloader"], is_train=False)
-    dataloader = accelerator.prepare(dataloader)
+    model, dataloader = accelerator.prepare(model, dataloader)
     results = []
     with open(outdir / "results.jsonl", "w") as f:
         for batch in tqdm(dataloader):
@@ -66,6 +69,8 @@ def infer(model, config: dict, data: Path, outdir: Path):
 
 @torch.inference_mode()
 def infer_single(model, config: dict, audio: torch.Tensor | Path, audio_sr: int = None):
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    model.to(device)
     if isinstance(audio, Path):
         audio, audio_sr = torchaudio.load(audio.as_posix())
     elif isinstance(audio, torch.Tensor):
@@ -84,7 +89,6 @@ def infer_single(model, config: dict, audio: torch.Tensor | Path, audio_sr: int 
         audio, audio_lengths = inputs.input_values, mask2lens(inputs.attention_mask)
     else:
         audio_lengths = torch.tensor([audio.shape[1]], dtype=torch.long)
-    device = next(model.parameters()).device
     audio, audio_lengths = audio.to(device), audio_lengths.to(device)
     inputs = {"audio": audio, "audio_lengths": audio_lengths}
     metric2preds = {k: float(v[0]) for k, v in model.predict(**inputs).items()}
@@ -112,10 +116,7 @@ def get_args():
 
 if __name__ == "__main__":
     args = get_args()
-
-    accelerator = Accelerator()
     model, config = load_model(args.ckpt, args.config)
-
     if args.data.suffix not in [".jsonl", ".scp"]:
         infer_single(model, config, args.data)
     else:
