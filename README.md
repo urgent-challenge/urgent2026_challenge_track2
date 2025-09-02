@@ -11,7 +11,7 @@ This repo provides the official implementation/baseline derived from [Uni-VERSA-
 * [Training](#training)
 * [Batch Inference & Evaluation](#batch-inference--evaluation)
 * [Data](#data)
-* [Build Your Own multi-Metric Dataset](#build-your-own-multi-metric-dataset)
+  * [Build Your Own multi-Metric Dataset](#build-your-own-multi-metric-dataset)
 * [Citations](#citations)
 
 ---
@@ -20,8 +20,8 @@ This repo provides the official implementation/baseline derived from [Uni-VERSA-
 
 ```bash
 # Create and activate environment
-conda create -n urgent2026_sqa python=3.11 -y
-conda activate urgent2026_sqa
+conda create -n urgent2026-sqa python=3.11 -y
+conda activate urgent2026-sqa
 
 # Install (minimal deps for inference)
 pip install -e .
@@ -109,7 +109,7 @@ You may also want to evaluate metric by comparing annotated metrics (e.g. scoreq
 dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
   --pred "data/${dataset}/test/data.jsonl" \
   --ref  "data/${dataset}/test/data.jsonl" \
-  --pred-metric "scoreq" \
+  --pred-metric "scoreq"
 ```
 
 #### Metrics
@@ -117,46 +117,55 @@ dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
 <table>
 <thead>
 <tr>
-    <th class="tg-uzvj">Category</th>
-    <th class="tg-g7sd">Metric</th>
-    <th class="tg-uzvj">Value Range</th>
+    <th>Category</th>
+    <th>Metric</th>
+    <th>Value Range</th>
+    <th>Opt.</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-    <td class="tg-r6l2" rowspan="2">Error</td>
-    <td class="tg-rt8k">System level MSE ↓</td>
-    <td class="tg-51oy">[0, ∞)</td>
+    <td rowspan="2">Error</td>
+    <td>System level MSE</td>
+    <td>[0, ∞)</td>
+    <td>↓</td>
 </tr>
 <tr>
-    <td class="tg-rt8k">Utterance level MSE ↓</td>
-    <td class="tg-51oy">[0, ∞)</td>
+    <td>Utterance level MSE </td>
+    <td>[0, ∞)</td>
+    <td>↓</td>
 </tr>
 <tr>
-    <td class="tg-r6l2" rowspan="2">Linear Correlation</td>
-    <td class="tg-rt8k"> System level LCC ↑</td>
-    <td class="tg-51oy">[-1, 1]</td>
+    <td rowspan="2">Linear Correlation</td>
+    <td> System level LCC</td>
+    <td>[-1, 1]</td>
+    <td>↑</td>
 </tr>
 <tr>
-    <td class="tg-0a7q">Utterance level LCC ↑</td>
-    <td class="tg-51oy">[-1, 1]</td>
+    <td>Utterance level LCC</td>
+    <td>[-1, 1]</td>
+    <td>↑</td>
 </tr>
 <tr>
-    <td class="tg-r6l2" rowspan="4">Rank Correlation</td>
-    <td class="tg-rt8k"> System level SRCC ↑</td>
-    <td class="tg-51oy">[-1, 1]</td>
+    <td rowspan="4">Rank Correlation</td>
+    <td>System level SRCC</td>
+    <td>[-1, 1]</td>
+    <td>↑</td>
 </tr>
 <tr>
-    <td class="tg-0a7q">Utterance level SRCC ↑</td>
-    <td class="tg-51oy">[-1, 1]</td>
+    <td>Utterance level SRCC</td>
+    <td>[-1, 1]</td>
+    <td>↑</td>
 </tr>
 <tr>
-    <td class="tg-rt8k"> System level KTAU ↑</td>
-    <td class="tg-51oy">[-1, 1]</td>
+    <td>System level KTAU</td>
+    <td>[-1, 1]</td>
+    <td>↑</td>
 </tr>
 <tr>
-    <td class="tg-0a7q">Utterance level KTAU ↑</td>
-    <td class="tg-51oy">[-1, 1]</td>
+    <td>Utterance level KTAU</td>
+    <td>[-1, 1]</td>
+    <td>↑</td>
 </tr>
 
 </tbody>
@@ -342,11 +351,12 @@ If you use this code or datasets, please consider citing:
   year={2025}
 }
 
-@article{P808-Sach2025,
-  title={P.808 Multilingual Speech Enhancement Testing: Approach and Results of {URGENT} 2025 Challenge},
-  author={Sach, Marvin and Fu, Yihui and Saijo, Kohei and Zhang, Wangyou and Cornell, Samuele and Scheibler, Robin and Li, Chenda and ...},
-  journal={arXiv preprint arXiv:25xx.xxxxx},
-  year={2025}
+@inproceedings{Interspeech2025-Saijo2025,
+  title={Interspeech 2025 {URGENT} Speech Enhancement Challenge},
+  author={Saijo, Kohei and Zhang, Wangyou and Cornell, Samuele and Scheibler, Robin and Li, Chenda and Ni, Zhaoheng and Kumar, Anurag and Sach, Marvin and Fu, Yihui and Wang, Wei and Fingscheidt, Tim and Watanabe, Shinji},
+  booktitle={Proc. Interspeech},
+  pages={858--862},
+  year={2025},
 }
 
 @inproceedings{URGENT-Zhang2024,
@@ -355,5 +365,12 @@ If you use this code or datasets, please consider citing:
   booktitle={Proc. Interspeech},
   pages={4868--4872},
   year={2024}
+}
+
+@article{P808-Sach2025,
+  title={P.808 Multilingual Speech Enhancement Testing: Approach and Results of {URGENT} 2025 Challenge},
+  author={Sach, Marvin and Fu, Yihui and Saijo, Kohei and Zhang, Wangyou and Cornell, Samuele and Scheibler, Robin and Li, Chenda and Kumar, Anurag and Wang, Wei and Qian, Yanmin and Watanabe, Shinji and Fingscheidt, Tim},
+  journal={arXiv preprint arXiv:2507.11306},
+  year={2025}
 }
 ```
