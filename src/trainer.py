@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from transformers import get_linear_schedule_with_warmup
 
-from utils import calculate_metrics, default
+from utils import calculate_metrics
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,6 @@ class Trainer:
         num_warmup_updates: int = 20000,
         grad_accumulation_steps=1,
         grad_norm=1.0,
-        last_per_updates=None,
         save_per_updates=1000,
         keep_last_n_checkpoints=-1,
         ema_kwargs: dict = dict(),
@@ -45,13 +44,16 @@ class Trainer:
         self.num_warmup_updates = num_warmup_updates
         self.save_per_updates = save_per_updates
         self.keep_last_n_checkpoints = keep_last_n_checkpoints
-        self.last_per_updates = default(last_per_updates, save_per_updates)
 
         self.learning_rate = learning_rate
         self.grad_accumulation_steps = grad_accumulation_steps
         self.grad_norm = grad_norm
 
         ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
+        try:
+            import tensorboard
+        except ImportError:
+            raise ImportError("TensorBoard is not installed. Please run `pip install tensorboard`.")
         self.accelerator = Accelerator(
             log_with="tensorboard",
             project_dir="./runs",
@@ -231,10 +233,6 @@ class Trainer:
                     progress_bar.set_postfix(update=str(current_update), **cv_info)
                     self.save_checkpoint(current_update)
                     self.model.train()
-                    continue
-
-                if current_update % self.last_per_updates == 0 and self.accelerator.sync_gradients:
-                    self.save_checkpoint(current_update, is_last=True)
 
         self.save_checkpoint(current_update, is_last=True)
         self.accelerator.end_training()
