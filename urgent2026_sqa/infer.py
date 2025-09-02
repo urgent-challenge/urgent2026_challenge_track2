@@ -7,13 +7,12 @@ from typing import Optional
 
 import torch
 import torchaudio
-from accelerate import Accelerator
 from huggingface_hub import snapshot_download
 from hyperpyyaml import load_hyperpyyaml
 from tqdm import tqdm
+from utils import mask2lens, override
 
 from data import init_dataloader
-from utils import mask2lens, override
 
 
 def load_model(checkpoint: Path, config: Optional[dict] = None):
@@ -28,8 +27,7 @@ def load_model(checkpoint: Path, config: Optional[dict] = None):
     with open(config_path) as f:
         config = load_hyperpyyaml(f)
 
-    state_dict = torch.load(checkpoint, map_location="cpu")["ema_model"]
-    state_dict = {k.removeprefix("ema_model."): v for k, v in state_dict.items() if k not in ["initted", "step"]}
+    state_dict = torch.load(checkpoint, map_location="cpu")["model"]
 
     model = config["model"]
     model.load_state_dict(state_dict)
@@ -39,6 +37,8 @@ def load_model(checkpoint: Path, config: Optional[dict] = None):
 
 @torch.inference_mode()
 def infer(model, config: dict, data: Path, outdir: Path):
+    from accelerate import Accelerator
+
     accelerator = Accelerator()
     config["dataloader"] = override(
         config["dataloader"],
@@ -118,7 +118,8 @@ if __name__ == "__main__":
     args = get_args()
     model, config = load_model(args.ckpt, args.config)
     if args.data.suffix not in [".jsonl", ".scp"]:
-        infer_single(model, config, args.data)
+        metric2preds = infer_single(model, config, args.data)
+        print(json.dumps(metric2preds, ensure_ascii=False, indent=4))
     else:
         assert args.outdir is not None, "Please provide --outdir for batch inference"
         args.outdir.mkdir(parents=True, exist_ok=True)

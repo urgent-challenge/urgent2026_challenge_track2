@@ -14,7 +14,18 @@ authors = [{ name = "Wei Wang", email = "wangweidmail0809@gmail.com" }]
 
 # Runtime deps (installed for all users)
 dependencies = [
-    "accelerate",
+    "torch",
+    "torchaudio",
+    "hyperpyyaml",
+    "huggingface_hub",
+    "transformers",
+    "einops",
+]
+
+# Extras: install with pip install -e ".[dev]" (or ".[dev,docs]" for multiple)
+# Extras: install with pip install -e ".[dev]" (or ".[dev,docs]" for multiple)
+[project.optional-dependencies]
+train = [
     "transformers",
     "hyperpyyaml",
     "torchaudio",
@@ -24,9 +35,6 @@ dependencies = [
     "ema_pytorch",
     "tensorboard",
 ]
-
-# Extras: install with pip install -e ".[dev]" (or ".[dev,docs]" for multiple)
-[project.optional-dependencies]
 dev = [
     "accelerate",
     "transformers",

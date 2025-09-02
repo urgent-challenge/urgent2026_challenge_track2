@@ -2,9 +2,6 @@ from __future__ import annotations
 
 from typing import Any
 
-import numpy as np
-import pandas as pd
-import scipy.stats
 import torch
 
 
@@ -44,6 +41,10 @@ def calculate_metrics(preds: list[dict], refs: list[dict]) -> dict[str, dict[str
     preds: list of {"sample_id": str, "system_id": str, "value": float}
     lables: list of {"sample_id": str, "system_id": str, "value": float}
     """
+    import numpy as np
+    import pandas as pd
+    import scipy.stats
+
     df_pred = pd.DataFrame(preds).rename(columns={"value": "pred"})
     df_ref = pd.DataFrame(refs).rename(columns={"value": "ref"})
 

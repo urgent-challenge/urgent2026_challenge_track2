@@ -8,12 +8,10 @@ import torch
 import torch.distributed as dist
 from accelerate import Accelerator
 from accelerate.utils import DistributedDataParallelKwargs
-from ema_pytorch import EMA
 from torch.optim import AdamW
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from transformers import get_linear_schedule_with_warmup
-
 from utils import calculate_metrics
 
 logger = logging.getLogger(__name__)
@@ -32,7 +30,6 @@ class Trainer:
         grad_norm=1.0,
         save_per_updates=1000,
         keep_last_n_checkpoints=-1,
-        ema_kwargs: dict = dict(),
         accelerate_kwargs: dict = dict(),
     ):
         self.pretrained_ckpt = pretrained_ckpt
@@ -73,9 +70,6 @@ class Trainer:
             project_name=self.exp_dir.name,
             config=model_cfg_dict,
         )
-        if self.is_main:
-            self.ema_model = EMA(self.model, include_online_model=False, **ema_kwargs)
-            self.ema_model.to(self.accelerator.device)
 
     @property
     def is_main(self):
@@ -89,7 +83,6 @@ class Trainer:
         checkpoint = dict(
             model=self.accelerator.unwrap_model(self.model).state_dict(),
             optimizer=self.optimizer.state_dict(),
-            ema_model=self.ema_model.state_dict(),
             scheduler=self.scheduler.state_dict(),
             update=update,
         )
@@ -130,16 +123,7 @@ class Trainer:
 
         checkpoint = torch.load(latest_checkpoint, weights_only=True, map_location="cpu")
 
-        if self.is_main:
-            self.ema_model.load_state_dict(checkpoint["ema_model"])
-
         if latest_checkpoint == self.pretrained_ckpt:
-            checkpoint["model"] = {
-                k.replace("ema_model.", ""): v
-                for k, v in checkpoint["ema_model"].items()
-                # FIXME: check if this is necessary
-                # if k not in ["initted", "update", "step"]
-            }
             self.model.load_state_dict(checkpoint["model"])
             update = 0
         else:
@@ -213,9 +197,6 @@ class Trainer:
                     self.optimizer.zero_grad()
 
                 if self.accelerator.sync_gradients:
-                    if self.is_main:
-                        self.ema_model.update()
-
                     current_update += 1
                     progress_bar.update(1)
                     progress_bar.set_postfix(update=str(current_update), loss=loss.item(), **info)
