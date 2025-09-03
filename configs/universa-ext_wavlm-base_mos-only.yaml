@@ -13,7 +13,7 @@ metrics:
         max: 5.0
 
 trainer:
-    epochs: 30
+    epochs: 20
     grad_norm: 1.0
     learning_rate: 3e-5
     save_per_updates: 1000

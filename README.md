@@ -1,34 +1,26 @@
 # URGENT 2026 — Track 2 (Speech Quality Assessment)
 
 
-Predict the Mean Opinion Score (MOS) of speech processed by **speech enhancement (SE)** systems.
+Predict the Mean Opinion Score (MOS) of speech processed by **speech enhancement (SE)** systems. Check our [challenge webpage](https://urgent-challenge.github.io/urgent2026/track2) for details
+
 This repo provides the official implementation/baseline derived from [UniVERSA-Ext](https://arxiv.org/abs/2506.12260) for URGENT 2026 Track 2.
 
 ## 📑 Table of Contents
 
-* [Installation](#️-installation)
 * [Quickstart (Inference)](#-quickstart-inference)
 * [Training](#-training)
+  * [Installation](#️-installation)
+  * [Data](#-data)
+  * [Launch Training](#-launch-training)
+  * [Build Your Own multi-Metric Dataset (WIP)](#️-build-your-own-multi-metric-dataset) 
 * [Batch Inference & Evaluation](#-batch-inference--evaluation)
-* [Data](#-data)
-  * [Build Your Own multi-Metric Dataset](#️-build-your-own-multi-metric-dataset)
+  * [Leaderboard Submission Toolkits (WIP)](#leaderboard-submission-toolkits-wip)
+* [Benchmark (WIP)](#benchmark-wip)
+* [Links](#-links)
+* [FAQ](#-faq)
 * [Citations](#-citations)
 
 ---
-
-## ⚙️ Installation
-
-```bash
-# Create and activate environment
-conda create -n urgent2026-sqa python=3.11 -y
-conda activate urgent2026-sqa
-
-# Install (minimal deps for inference)
-pip install -e .
-
-# For training, install extra dependencies
-# pip install -e .[train]
-```
 
 ---
 
@@ -43,6 +35,13 @@ Play with the model in Colab:
 
 > 🔒 **Security note**: We use **HyperPyYAML** for config loading. Treat configs as code: **do not** load model from untrusted sources.
 
+1. Install from GitHub
+
+```bash
+pip install git+https://github.com/urgent-challenge/urgent2026_challenge_track2
+```
+
+2. Predict the speech quality metrics of a single audio file
 
 ```python
 from urgent2026_sqa.infer import infer_single, load_model
@@ -54,139 +53,35 @@ print(infer_single(model, config, "./assets/sp03.wav"))
 print(infer_single(model, config, "./assets/sp03_casino_sn5.wav"))
 ```
 
+3. Predict the speech quality metrics of all audio file in a folder (WIP)
+
+
 ---
 
 ## 🔬 Training
 
-### 1️⃣ Prepare datasets
+### ⚙️ Installation
+
+```bash
+git clone https://github.com/urgent-challenge/urgent2026_challenge_track2
+cd urgent2026_challenge_track2
+
+# Create and activate environment
+conda create -n urgent2026-sqa python=3.11 -y
+conda activate urgent2026-sqa
+
+pip install -e .[train]
+```
+
+### 📊 Data
+
+The following script fetches/organizes all datasets listed in below:
+> ⚠️ NOTE: bvcc and bc19 datasets require manual processing after downloading.
+> If you don't want to include them, comment out the corresponding line in scripts/data/prepare.sh.
 
 ```bash
 bash scripts/prepare_data.sh </path/to/db>
 ```
-
-This script fetches/organizes all datasets listed in the [Data](#data) section.
-
-> ⚠️ NOTE: bvcc and bc19 datasets require manual processing after downloading.
-If you don't want to include them, comment out the corresponding line in scripts/data/prepare.sh.
-
-### 2️⃣ Launch training
-
-The following command train the UniVERSA-Ext with all prepared training datasets.
-```bash
-accelerate launch urgent2026/train.py \
-  --config configs/universa-ext.yaml \
-  --exp exp/universa-ext \
-  --train-data "data/*/train/data.jsonl" \
-  --cv-data "data/chime-7-udase-eval/test/data.jsonl"
-```
-
-✅ Training will auto-resume from the latest checkpoint
-
-✅ Distributed training and mixed precision is supported with `accelerate`:
-```bash
-accelerate launch --num_processes=<N> \
-  --main_process_port <port> \
-  --mixed_precision=bf16 \
-  urgent2026/train.py \
-  ...
-```
-
----
-
-## 📊 Batch Inference & Evaluation
-
-### Batch inference
-For inference on single audio file, follow [Quickstart (Inference)](#quickstart-inference)
-
-For batch inference:
-```bash
-dataset="chime-7-udase-eval" python urgent2026_sqa/infer.py \
-  --ckpt "exp/universa-ext/model_last.pt" \
-  --data "data/${dataset}/test/data.jsonl" \
-  --outdir "exp/universa_ext/infer/${dataset}"
-```
-
-This will genenerate a `results.jsonl` file and `{metric}.scp` files for all metrics under the `--outdir`
-
-
-### Evaluation
-
-```bash
-dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
-  --pred "exp/universa_ext/infer/${dataset}/results.jsonl" \
-  --ref  "data/${dataset}/test/data.jsonl"
-```
-
-You may also want to evaluate metric by comparing annotated metrics (e.g. scoreq) vs mos:
-```bash
-dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
-  --pred "data/${dataset}/test/data.jsonl" \
-  --ref  "data/${dataset}/test/data.jsonl" \
-  --pred-metric "scoreq"
-```
-
-#### Metrics
-
-<table>
-<thead>
-<tr>
-    <th>Category</th>
-    <th>Metric</th>
-    <th>Value Range</th>
-    <th>Opt.</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-    <td rowspan="2">Error</td>
-    <td>System level MSE</td>
-    <td>[0, ∞)</td>
-    <td>↓</td>
-</tr>
-<tr>
-    <td>Utterance level MSE </td>
-    <td>[0, ∞)</td>
-    <td>↓</td>
-</tr>
-<tr>
-    <td rowspan="2">Linear Correlation</td>
-    <td> System level LCC</td>
-    <td>[-1, 1]</td>
-    <td>↑</td>
-</tr>
-<tr>
-    <td>Utterance level LCC</td>
-    <td>[-1, 1]</td>
-    <td>↑</td>
-</tr>
-<tr>
-    <td rowspan="4">Rank Correlation</td>
-    <td>System level SRCC</td>
-    <td>[-1, 1]</td>
-    <td>↑</td>
-</tr>
-<tr>
-    <td>Utterance level SRCC</td>
-    <td>[-1, 1]</td>
-    <td>↑</td>
-</tr>
-<tr>
-    <td>System level KTAU</td>
-    <td>[-1, 1]</td>
-    <td>↑</td>
-</tr>
-<tr>
-    <td>Utterance level KTAU</td>
-    <td>[-1, 1]</td>
-    <td>↑</td>
-</tr>
-
-</tbody>
-</table><br/>
-
----
-
-## 📊 Data
 
 <table>
 <colgroup>
@@ -345,14 +240,176 @@ dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
 
 ---
 
+### 🔥 Launch training
 
-## 🛠️ Build Your Own Multi-Metric Dataset
+The following command train the UniVERSA-Ext with all prepared training datasets.
+```bash
+accelerate launch urgent2026/train.py \
+  --config configs/universa-ext.yaml \
+  --exp exp/universa-ext \
+  --train-data "data/*/train/data.jsonl" \
+  --cv-data "data/chime-7-udase-eval/test/data.jsonl"
+```
+
+✅ Training will auto-resume from the latest checkpoint
+
+✅ Distributed training and mixed precision is supported with `accelerate`:
+```bash
+accelerate launch --num_processes=<N> \
+  --main_process_port <port> \
+  --mixed_precision=bf16 \
+  urgent2026/train.py \
+  ...
+```
+
+If you use `configs/universa-ext_wavlm-base_mos-only.yaml` you'll need to exclude the `urgent2024-sqa` training set:
+```bash
+accelerate launch urgent2026/train.py \
+  --config configs/universa-ext_wavlm-base_mos-only.yaml \
+  --exp exp/universa-ext_wavlm-base_mos-only \
+  --train-data "data/{bvcc,bc19,nisqa,pstn,somos,tcd-voip,tencent,tmhint-qi,ttsds2}/train/data.jsonl" \
+  --cv-data "data/chime-7-udase-eval/test/data.jsonl"
+```
+
+### 🛠️ (Optional) Build Your Own Multi-Metric Dataset
 > 🚧 **Under Construction**  
 
 
 ```bash
 pip install -e .[dev]
 ```
+
+
+
+
+---
+
+## 📊 Batch Inference & Evaluation
+
+### Batch inference
+For inference on single audio file, follow [Quickstart (Inference)](#-quickstart-inference)
+
+For batch inference:
+```bash
+dataset="chime-7-udase-eval" python urgent2026_sqa/infer.py \
+  --ckpt "exp/universa-ext/model_last.pt" \
+  --data "data/${dataset}/test/data.jsonl" \
+  --outdir "exp/universa_ext/infer/${dataset}"
+```
+
+This will genenerate a `results.jsonl` file and `{metric}.scp` files for all metrics under the `--outdir`
+
+
+### Evaluation
+
+```bash
+dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
+  --pred "exp/universa_ext/infer/${dataset}/results.jsonl" \
+  --ref  "data/${dataset}/test/data.jsonl"
+```
+
+You may also want to evaluate metric by comparing annotated metrics (e.g. scoreq) vs mos:
+```bash
+dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
+  --pred "data/${dataset}/test/data.jsonl" \
+  --ref  "data/${dataset}/test/data.jsonl" \
+  --pred-metric "scoreq"
+```
+
+#### Metrics
+
+<table>
+<thead>
+<tr>
+    <th>Category</th>
+    <th>Metric</th>
+    <th>Value Range</th>
+    <th>Opt.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+    <td rowspan="2">Error</td>
+    <td>System level MSE</td>
+    <td>[0, ∞)</td>
+    <td>↓</td>
+</tr>
+<tr>
+    <td>Utterance level MSE </td>
+    <td>[0, ∞)</td>
+    <td>↓</td>
+</tr>
+<tr>
+    <td rowspan="2">Linear Correlation</td>
+    <td> System level LCC</td>
+    <td>[-1, 1]</td>
+    <td>↑</td>
+</tr>
+<tr>
+    <td>Utterance level LCC</td>
+    <td>[-1, 1]</td>
+    <td>↑</td>
+</tr>
+<tr>
+    <td rowspan="4">Rank Correlation</td>
+    <td>System level SRCC</td>
+    <td>[-1, 1]</td>
+    <td>↑</td>
+</tr>
+<tr>
+    <td>Utterance level SRCC</td>
+    <td>[-1, 1]</td>
+    <td>↑</td>
+</tr>
+<tr>
+    <td>System level KTAU</td>
+    <td>[-1, 1]</td>
+    <td>↑</td>
+</tr>
+<tr>
+    <td>Utterance level KTAU</td>
+    <td>[-1, 1]</td>
+    <td>↑</td>
+</tr>
+
+</tbody>
+</table>
+
+#### Leaderboard Submission Toolkits (WIP)
+
+---
+
+## Benchmark (WIP)
+
+--
+
+## 🔗 Links
+
+### Suggested MOS Predictors
+
+| Repository | Paper (arXiv / Proceedings) |
+|------------|-----------------------------|
+| [UniVERSA-Ext (This repo)](#) | [Improving Speech Enhancement with Multi-Metric Supervision from Learned Quality Assessment](https://arxiv.org/pdf/2506.12260) |
+| [Uni-VERSA](https://huggingface.co/collections/espnet/universa-6834e7c0a28225bffb6e2526) | [Uni-VERSA: Versatile Speech Assessment with a Unified Network](https://arxiv.org/abs/2505.20741) |
+| [SCOREQ](https://github.com/alessandroragano/scoreq) | [Speech Quality Assessment with Contrastive Regression](https://arxiv.org/abs/2410.06675) |
+| [UTMOSv2](https://github.com/sarulab-speech/UTMOSv2) | [https://arxiv.org/abs/2409.09305](https://arxiv.org/abs/2409.09305) |
+| [UTMOS](https://github.com/sarulab-speech/UTMOS22) | [SaruLab System for VoiceMOS Challenge 2022](https://arxiv.org/abs/2204.02152) |
+| [SSL-MOS](https://github.com/nii-yamagishilab/mos-finetune-ssl) | [Generalization Ability of MOS Prediction Networks]() |
+| [NISQA](https://github.com/gabrielmittag/NISQA) | [NISQA: A Deep CNN-Self-Attention Model for Multidimensional Speech Quality Prediction with Crowdsourced Datasets](https://arxiv.org/abs/2104.09494) |
+| [LDNet](https://github.com/unilight/LDNet) | [LDNet: Unified Listener Dependent Modeling in MOS Prediction for Synthetic Speech](https://arxiv.org/abs/2110.09103) |
+| [Distill-MOS](https://github.com/microsoft/Distill-MOS) | [Distillation and Pruning for Scalable Self-Supervised Representation-Based Speech Quality Assessment](https://arxiv.org/abs/2502.05356v1) |
+| [DNSMOS](https://github.com/microsoft/DNS-Challenge) | [DNSMOS: A Non-Intrusive Perceptual Objective Speech Quality metric to evaluate Noise Suppressors](https://arxiv.org/abs/2010.15258) |
+| [DNSMOSPro](https://github.com/fcumlin/DNSMOSPro) | [DNSMOS Pro: A Reduced-Size DNN for Probabilistic MOS of Speech](https://www.isca-archive.org/interspeech_2024/cumlin24_interspeech.html) |
+
+---
+
+## 🙋 FAQ
+
+#### Q1. The [`urgent2025-sqa`]("https://huggingface.co/datasets/urgent-challenge/urgent2024-sqa") dataset does not seem to have a mos labeled split as in [`urgent2024-sqa`]("https://huggingface.co/datasets/urgent-challenge/urgent2024-sqa")
+
+**A:**  The mos labeled split of [`urgent2025-sqa`]("https://huggingface.co/datasets/urgent-challenge/urgent2024-sqa") is partially used as test data for this challenge, it will be release after the challenge ends, stay tuned!
+
+---
 
 ## 📚 Citations
 
