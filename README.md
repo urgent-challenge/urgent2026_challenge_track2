@@ -3,7 +3,7 @@
 
 Predict the Mean Opinion Score (MOS) of speech processed by **speech enhancement (SE)** systems. Check our [challenge webpage](https://urgent-challenge.github.io/urgent2026/track2) for details
 
-This repo provides the official implementation/baseline derived from [UniVERSA-Ext](https://arxiv.org/abs/2506.12260) for URGENT 2026 Track 2.
+This repo provides the official implementation/baseline derived from [Uni-VERSA-Ext](https://arxiv.org/abs/2506.12260) for URGENT 2026 Track 2.
 
 ## 📑 Table of Contents
 
@@ -240,7 +240,7 @@ bash scripts/prepare_data.sh </path/to/db>
 
 ### 🔥 Launch training
 
-The following command train the UniVERSA-Ext with all prepared training datasets.
+The following command train the Uni-VERSA-Ext with all prepared training datasets.
 ```bash
 accelerate launch urgent2026/train.py \
   --config configs/universa-ext.yaml \
@@ -385,19 +385,24 @@ dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
 
 ### Suggested MOS Predictors
 
-| Repository | Paper |
-|------------|-----------------------------|
-| [UniVERSA-Ext (This repo)](#) | [Improving Speech Enhancement with Multi-Metric Supervision from Learned Quality Assessment](https://arxiv.org/pdf/2506.12260) |
-| [Uni-VERSA](https://huggingface.co/collections/espnet/universa-6834e7c0a28225bffb6e2526) | [Uni-VERSA: Versatile Speech Assessment with a Unified Network](https://arxiv.org/abs/2505.20741) |
-| [SCOREQ](https://github.com/alessandroragano/scoreq) | [Speech Quality Assessment with Contrastive Regression](https://arxiv.org/abs/2410.06675) |
-| [UTMOSv2](https://github.com/sarulab-speech/UTMOSv2) | [https://arxiv.org/abs/2409.09305](https://arxiv.org/abs/2409.09305) |
-| [UTMOS](https://github.com/sarulab-speech/UTMOS22) | [SaruLab System for VoiceMOS Challenge 2022](https://arxiv.org/abs/2204.02152) |
-| [SSL-MOS](https://github.com/nii-yamagishilab/mos-finetune-ssl) | [Generalization Ability of MOS Prediction Networks]() |
-| [NISQA](https://github.com/gabrielmittag/NISQA) | [NISQA: A Deep CNN-Self-Attention Model for Multidimensional Speech Quality Prediction with Crowdsourced Datasets](https://arxiv.org/abs/2104.09494) |
-| [LDNet](https://github.com/unilight/LDNet) | [LDNet: Unified Listener Dependent Modeling in MOS Prediction for Synthetic Speech](https://arxiv.org/abs/2110.09103) |
-| [Distill-MOS](https://github.com/microsoft/Distill-MOS) | [Distillation and Pruning for Scalable Self-Supervised Representation-Based Speech Quality Assessment](https://arxiv.org/abs/2502.05356v1) |
-| [DNSMOS](https://github.com/microsoft/DNS-Challenge) | [DNSMOS: A Non-Intrusive Perceptual Objective Speech Quality metric to evaluate Noise Suppressors](https://arxiv.org/abs/2010.15258) |
-| [DNSMOSPro](https://github.com/fcumlin/DNSMOSPro) | [DNSMOS Pro: A Reduced-Size DNN for Probabilistic MOS of Speech](https://www.isca-archive.org/interspeech_2024/cumlin24_interspeech.html) |
+| Repository | Year | Paper |
+|------------|------|-----------------------|
+| [Uni-VERSA-Ext (This repo)](https://github.com/urgent-challenge/urgent2026_challenge_track2) | 2025 | [Improving Speech Enhancement with Multi-Metric Supervision from Learned Quality Assessment](https://arxiv.org/pdf/2506.12260) |
+| [Uni-VERSA](https://huggingface.co/collections/espnet/universa-6834e7c0a28225bffb6e2526) | 2025 | [Uni-VERSA: Versatile Speech Assessment with a Unified Network](https://arxiv.org/abs/2505.20741) |
+| [Distill-MOS](https://github.com/microsoft/Distill-MOS) | 2025 | [Distillation and Pruning for Scalable Self-Supervised Representation-Based Speech Quality Assessment](https://arxiv.org/abs/2502.05356v1) |
+| [SCOREQ](https://github.com/alessandroragano/scoreq) | 2024 | [Speech Quality Assessment with Contrastive Regression](https://arxiv.org/abs/2410.06675) |
+| [DNSMOSPro](https://github.com/fcumlin/DNSMOSPro) | 2024 | [DNSMOS Pro: A Reduced-Size DNN for Probabilistic MOS of Speech](https://www.isca-archive.org/interspeech_2024/cumlin24_interspeech.html) |
+| [UTMOSv2](https://github.com/sarulab-speech/UTMOSv2) | 2024 | [The T05 System for The VoiceMOS Challenge 2024: Transfer Learning from Deep Image Classifier to Naturalness MOS Prediction of High-Quality Synthetic Speech](https://arxiv.org/abs/2409.09305) |
+| [UTMOS](https://github.com/sarulab-speech/UTMOS22) | 2022 | [SaruLab System for VoiceMOS Challenge 2022](https://arxiv.org/abs/2204.02152) |
+| [SSL-MOS](https://github.com/nii-yamagishilab/mos-finetune-ssl) | 2022 | [Generalization Ability of MOS Prediction Networks](https://arxiv.org/abs/2110.02635) |
+| [NISQA](https://github.com/gabrielmittag/NISQA) | 2021 | [NISQA: A Deep CNN-Self-Attention Model for Multidimensional Speech Quality Prediction with Crowdsourced Datasets](https://arxiv.org/abs/2104.09494) |
+| [LDNet](https://github.com/unilight/LDNet) | 2021 | [LDNet: Unified Listener Dependent Modeling in MOS Prediction for Synthetic Speech](https://arxiv.org/abs/2110.09103) |
+| [DNSMOS](https://github.com/microsoft/DNS-Challenge) | 2020 | [DNSMOS: A Non-Intrusive Perceptual Objective Speech Quality metric to evaluate Noise Suppressors](https://arxiv.org/abs/2010.15258) |
+
+
+### Related Challenges
+- [AudioMOS Challenge series (VoiceMOS 2022–2024, AudioMOS 2025)](https://sites.google.com/view/voicemos-challenge/audiomos-challenge-2025): A series of benchmark challenges on MOS prediction for synthetic speech, singing voice music and general audio, providing large-scale datasets and standard evaluation protocols.
+
 
 ---
 
