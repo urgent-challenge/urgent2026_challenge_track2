@@ -22,8 +22,6 @@ This repo provides the official implementation/baseline derived from [UniVERSA-E
 
 ---
 
----
-
 ## 🚀 Quickstart (Inference)
 
 ### 💻 Colab
@@ -77,7 +75,7 @@ pip install -e .[train]
 
 The following script fetches/organizes all datasets listed in below:
 > ⚠️ NOTE: bvcc and bc19 datasets require manual processing after downloading.
-> If you don't want to include them, comment out the corresponding line in scripts/data/prepare.sh.
+> If you don't want to include them, comment out the corresponding line in [scripts/data/prepare.sh](https://github.com/urgent-challenge/urgent2026_challenge_track2/blob/main/scripts/data/prepare.sh).
 
 ```bash
 bash scripts/prepare_data.sh </path/to/db>
@@ -258,13 +256,13 @@ accelerate launch urgent2026/train.py \
 accelerate launch --num_processes=<N> \
   --main_process_port <port> \
   --mixed_precision=bf16 \
-  urgent2026/train.py \
+  urgent2026_sqa/train.py \
   ...
 ```
 
 If you use `configs/universa-ext_wavlm-base_mos-only.yaml` you'll need to exclude the `urgent2024-sqa` training set:
 ```bash
-accelerate launch urgent2026/train.py \
+accelerate launch urgent2026_sqa/train.py \
   --config configs/universa-ext_wavlm-base_mos-only.yaml \
   --exp exp/universa-ext_wavlm-base_mos-only \
   --train-data "data/{bvcc,bc19,nisqa,pstn,somos,tcd-voip,tencent,tmhint-qi,ttsds2}/train/data.jsonl" \
@@ -284,7 +282,7 @@ pip install -e .[dev]
 
 ---
 
-## 📊 Batch Inference & Evaluation
+## 📦 Batch Inference & Evaluation
 
 ### Batch inference
 For inference on single audio file, follow [Quickstart (Inference)](#-quickstart-inference)
@@ -294,7 +292,7 @@ For batch inference:
 dataset="chime-7-udase-eval" python urgent2026_sqa/infer.py \
   --ckpt "exp/universa-ext/model_last.pt" \
   --data "data/${dataset}/test/data.jsonl" \
-  --outdir "exp/universa_ext/infer/${dataset}"
+  --outdir "exp/universa-ext/infer/${dataset}"
 ```
 
 This will genenerate a `results.jsonl` file and `{metric}.scp` files for all metrics under the `--outdir`
@@ -304,7 +302,7 @@ This will genenerate a `results.jsonl` file and `{metric}.scp` files for all met
 
 ```bash
 dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
-  --pred "exp/universa_ext/infer/${dataset}/results.jsonl" \
+  --pred "exp/universa-ext/infer/${dataset}/results.jsonl" \
   --ref  "data/${dataset}/test/data.jsonl"
 ```
 
@@ -387,7 +385,7 @@ dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
 
 ### Suggested MOS Predictors
 
-| Repository | Paper (arXiv / Proceedings) |
+| Repository | Paper |
 |------------|-----------------------------|
 | [UniVERSA-Ext (This repo)](#) | [Improving Speech Enhancement with Multi-Metric Supervision from Learned Quality Assessment](https://arxiv.org/pdf/2506.12260) |
 | [Uni-VERSA](https://huggingface.co/collections/espnet/universa-6834e7c0a28225bffb6e2526) | [Uni-VERSA: Versatile Speech Assessment with a Unified Network](https://arxiv.org/abs/2505.20741) |
@@ -405,9 +403,9 @@ dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
 
 ## 🙋 FAQ
 
-#### Q1. The [`urgent2025-sqa`]("https://huggingface.co/datasets/urgent-challenge/urgent2024-sqa") dataset does not seem to have a mos labeled split as in [`urgent2024-sqa`]("https://huggingface.co/datasets/urgent-challenge/urgent2024-sqa")
+#### Q1. The [urgent2025-sqa]("https://huggingface.co/datasets/urgent-challenge/urgent2024-sqa") dataset does not seem to have a mos labeled split as in [urgent2024-sqa]("https://huggingface.co/datasets/urgent-challenge/urgent2024-sqa")
 
-**A:**  The mos labeled split of [`urgent2025-sqa`]("https://huggingface.co/datasets/urgent-challenge/urgent2024-sqa") is partially used as test data for this challenge, it will be release after the challenge ends, stay tuned!
+**A:**  The mos labeled split of [urgent2025-sqa]("https://huggingface.co/datasets/urgent-challenge/urgent2024-sqa") is partially used as test data for this challenge, it will be release after the challenge ends, stay tuned!
 
 ---
 
