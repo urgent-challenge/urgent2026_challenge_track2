@@ -6,7 +6,7 @@ import torch
 from nisqa_utils import load_nisqa_model, predict_nisqa
 from tqdm import tqdm
 
-nisqa_model_path = Path("local/build_dataset/NISQA/weights/nisqa.tar")
+nisqa_model_path = Path("scripts/multi_metric/NISQA/weights/nisqa.tar")
 
 
 def nisqa_metric(model, audio_path):

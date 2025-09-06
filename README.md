@@ -403,6 +403,15 @@ dataset="chime-7-udase-eval" python urgent2026_sqa/eval.py \
 ### Related Challenges
 - [AudioMOS Challenge series (VoiceMOS 2022–2024, AudioMOS 2025)](https://sites.google.com/view/voicemos-challenge/audiomos-challenge-2025): A series of benchmark challenges on MOS prediction for synthetic speech, singing voice music and general audio, providing large-scale datasets and standard evaluation protocols.
 
+| Model | sysMSE | sysLCC | sysSRCC | sysKTAU | uttMSE | uttLCC | uttSRCC | uttKTAU |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| UniVERSA-Ext_5metric | 0.43 | **0.84** | **0.81** | **0.62** | 0.29 | *0.93* | *0.91* | *0.76* |
+| UniVERSA-Ext_MOS-only | *1.14* | 0.78 | 0.74 | 0.55 | *1.04* | 0.88 | 0.84 | 0.67 |
+| SCOREQ | 1.10 | 0.69 | 0.66 | 0.48 | 0.92 | 0.82 | 0.81 | 0.62 |
+| Distill-MOS | 0.30 | **0.84** | **0.81** | **0.62** | 0.13 | **0.95** | **0.95** | **0.83** |
+| NISQA_MOS | 1.11 | 0.43 | 0.33 | 0.22 | 0.68 | 0.61 | 0.55 | 0.40 |
+| DNSMOS_OVRL | 0.81 | 0.48 | 0.47 | 0.33 | 0.68 | 0.63 | 0.60 | 0.46 |
+| UTMOS | **2.52** | 0.61 | 0.65 | 0.47 | **2.32** | 0.67 | 0.73 | 0.55 |
 
 ---
 

@@ -9,8 +9,8 @@ from espnet2.enh.layers.dnsmos import DNSMOS_local
 from tqdm import tqdm
 
 TARGET_FS = 16000
-primary_model_path = Path("local/build_dataset/DNSMOS/sig_bak_ovr.onnx")
-p808_model_path = Path("local/build_dataset/DNSMOS/model_v8.onnx")
+primary_model_path = Path("scripts/multi_metric/DNSMOS/sig_bak_ovr.onnx")
+p808_model_path = Path("scripts/multi_metric/DNSMOS/model_v8.onnx")
 
 
 def download_file(url: str, save_path: Path):

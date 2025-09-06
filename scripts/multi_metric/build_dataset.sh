@@ -35,7 +35,15 @@ if [ ! -e $data/utmos.scp ]; then
     python scripts/multi_metric/compute_utmos.py --wav-scp $data/wav.scp --out-scp $data/utmos.scp
 fi
 
-python scripts/multi_metric/collect_metrics.py $data $data/data.jsonl
+if [ ! -e $data/distill_mos.scp ]; then
+    python scripts/multi_metric/compute_distill_mos.py --wav-scp $data/wav.scp --out-scp $data/distill_mos.scp
+fi
+
+# if [ ! -e $data/utmosv2.scp ]; then
+#     python scripts/multi_metric/compute_utmosv2.py --wav-scp $data/wav.scp --out-scp $data/utmosv2.scp
+# fi
+
+python scripts/data/collect_metrics.py $data $data/data.jsonl
 
 
 echo "Done. time elapsed: ${SECONDS}s"
