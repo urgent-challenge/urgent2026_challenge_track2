@@ -25,13 +25,14 @@ class SQADataset(Dataset):
         self.sample_rate = sample_rate
         self.metrics = metrics
 
-        if isinstance(datasets, (Path, dict, str)):
+        if isinstance(datasets, (Path, str)):
             datasets = [datasets]
 
         assert isinstance(datasets, list)
         if isinstance(datasets[0], dict):
             self.entries = datasets[:]
-            return
+            for item in self.entries:
+                item["audio_path"] = Path(item["audio_path"]).as_posix()
 
         for dataset in datasets:
             with open(dataset, "r") as f:

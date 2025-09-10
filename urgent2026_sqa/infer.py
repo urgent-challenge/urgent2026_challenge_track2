@@ -110,7 +110,7 @@ def infer_single(model, config: dict, audio: torch.Tensor | np.ndarray | Path | 
 def infer_list(model, config: dict, audios: list[Path | str]):
     data = [{"sample_id": i, "system_id": "default", "audio_path": audio} for i, audio in enumerate(audios)]
     for item in data:
-        info = torchaudio.info(item["audio_path"].as_posix())
+        info = torchaudio.info(Path(item["audio_path"]).as_posix())
         item["duration"] = info.num_frames / info.sample_rate
     results = infer(model, config, data)
     results.sort(key=lambda x: x["sample_id"])
