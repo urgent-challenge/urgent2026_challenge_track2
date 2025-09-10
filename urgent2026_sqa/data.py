@@ -15,13 +15,23 @@ from urgent2026_sqa.utils import mask2lens
 
 
 class SQADataset(Dataset):
-    def __init__(self, datasets: list[Path] | Path, metrics: list[str], sample_rate: int = 16000):
+    def __init__(
+        self,
+        datasets: list[Path] | Path | list[str] | str | list[dict],
+        metrics: list[str],
+        sample_rate: int = 16000,
+    ):
         self.entries = []
         self.sample_rate = sample_rate
         self.metrics = metrics
 
-        if isinstance(datasets, Path):
+        if isinstance(datasets, (Path, dict, str)):
             datasets = [datasets]
+
+        assert isinstance(datasets, list)
+        if isinstance(datasets[0], dict):
+            self.entries = datasets[:]
+            return
 
         for dataset in datasets:
             with open(dataset, "r") as f:

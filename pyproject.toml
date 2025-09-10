@@ -5,14 +5,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "urgent2026_sqa"
-version = "0.1.0"
-description = "The official implementation of the UniVERSA-Ext baseline for the ICASSP 2024 URGENT Track 2 Speech Quality Assessment Challenge."
+version = "0.2.0"
+description = "The official implementation of the UniVERSA-Ext baseline for the ICASSP 2026 URGENT Track 2 Speech Quality Assessment Challenge."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [{ name = "Wei Wang", email = "wangweidmail0809@gmail.com" }]
 
 dependencies = [
+    "accelerate",
     "torch",
     "torchaudio",
     "hyperpyyaml",
