@@ -8,7 +8,7 @@ name = "urgent2026_sqa"
 version = "0.2.0"
 description = "The official implementation of the UniVERSA-Ext baseline for the ICASSP 2026 URGENT Track 2 Speech Quality Assessment Challenge."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "Wei Wang", email = "wangweidmail0809@gmail.com" }]
 
