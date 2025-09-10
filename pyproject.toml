@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "urgent2026_sqa"
-version = "0.2.0"
+version = "0.2.1"
 description = "The official implementation of the UniVERSA-Ext baseline for the ICASSP 2026 URGENT Track 2 Speech Quality Assessment Challenge."
 readme = "README.md"
 requires-python = ">=3.10"

@@ -33,6 +33,7 @@ class SQADataset(Dataset):
             self.entries = datasets[:]
             for item in self.entries:
                 item["audio_path"] = Path(item["audio_path"]).as_posix()
+            return
 
         for dataset in datasets:
             with open(dataset, "r") as f:
