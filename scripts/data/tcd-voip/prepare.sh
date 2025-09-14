@@ -15,7 +15,7 @@ if [ ! -e ${db}/download.done ]; then
     # gdown 1rHJN34vP-W8SJtjpNUnx5RIks3o5L5he
     hf download  --local-dir . --repo-type dataset urgent-challenge/urgent26_track2_sqa TCD-VOIP.zip
     unzip TCD-VOIP.zip
-    rm TCP-VOIP.zip
+    rm TCD-VOIP.zip
     mkdir -p wav
     find TCD-VOIP -type f -name "*.wav" -exec mv {} wav/ \;
     mv TCD-VOIP/README.txt .
