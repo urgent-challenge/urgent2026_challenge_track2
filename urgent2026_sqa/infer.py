@@ -74,7 +74,7 @@ def infer(
 @torch.inference_mode()
 def infer_single(model, config: dict, audio: torch.Tensor | np.ndarray | Path | str, audio_sr: int = None):
     """
-    when audio is torch.Tensor or np.array, the shap shoud be (1, num_samples)
+    when audio is torch.Tensor or np.ndarray, the shap shoud be (1, num_samples)
     """
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model.to(device)
@@ -87,7 +87,7 @@ def infer_single(model, config: dict, audio: torch.Tensor | np.ndarray | Path | 
             audio = torch.from_numpy(audio)
         assert audio.dim() == 2, "audio should be (1, num_samples)"
     else:
-        raise ValueError("audio should be a torch.Tensor or Path")
+        raise ValueError("audio should be a torch.Tensor, np.ndarray, str or Path")
     sample_rate = config["dataloader"].get("sample_rate", 16000)
     if audio_sr != sample_rate:
         audio = torchaudio.functional.resample(audio, audio_sr, feature_extractor.sampling_rate)
