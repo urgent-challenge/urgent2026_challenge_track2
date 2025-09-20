@@ -43,7 +43,7 @@ pip install git+https://github.com/urgent-challenge/urgent2026_challenge_track2
 ```python
 from urgent2026_sqa.infer import infer_single, load_model
 
-model = load_model("vvwangvv/universa-ext_wavlm-base_5metric")
+model, config = load_model("vvwangvv/universa-ext_wavlm-base_5metric")
 
 # examples are from https://labsites.rochester.edu/air/projects/is2012/examples.html
 print(infer_single(model, config, "./assets/sp03.wav"))
@@ -55,7 +55,7 @@ print(infer_single(model, config, "./assets/sp03_casino_sn5.wav"))
 from urgent2026_sqa.infer import infer_list, load_model
 from pathlib import Path
 
-model = load_model("vvwangvv/universa-ext_wavlm-base_5metric")
+model, config = load_model("vvwangvv/universa-ext_wavlm-base_5metric")
 audio_paths = list(Path("./assets").glob("*.wav"))
 # examples are from https://labsites.rochester.edu/air/projects/is2012/examples.html
 print(infer_list(model, config, audio_paths))
