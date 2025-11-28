@@ -14,7 +14,7 @@ This repo provides the official implementation/baseline derived from [Uni-VERSA-
   * [Launch Training](#-launch-training)
   * [Build Your Own multi-Metric Dataset (WIP)](#️-build-your-own-multi-metric-dataset) 
 * [Batch Inference & Evaluation](#-batch-inference--evaluation)
-* [Benchmark (WIP)](#benchmark-wip)
+* [Benchmark](https://github.com/urgent-challenge/urgent2026_challenge_track2/blob/main/BENCHMARK.md)
 * [Links](#-links)
 * [FAQ](#-faq)
 * [Citations](#-citations)
