@@ -89,11 +89,11 @@ def infer_single(model, config: dict, audio: torch.Tensor | np.ndarray | Path | 
     else:
         raise ValueError("audio should be a torch.Tensor, np.ndarray, str or Path")
     sample_rate = config["dataloader"].get("sample_rate", 16000)
+    feature_extractor = config["dataloader"].get("feature_extractor", None)
     if audio_sr != sample_rate:
         audio = torchaudio.functional.resample(audio, audio_sr, feature_extractor.sampling_rate)
 
     audio = audio.mean(dim=0).unsqueeze(0)  # mono
-    feature_extractor = config["dataloader"].get("feature_extractor", None)
     if feature_extractor is not None:
         feature_extractor_partial = partial(feature_extractor, sampling_rate=sample_rate)
         inputs = feature_extractor_partial(audio.numpy(), sampling_rate=sample_rate, return_tensors="pt")
