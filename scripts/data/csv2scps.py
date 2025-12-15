@@ -30,46 +30,72 @@ METRICS = [
     "utmos",
 ]
 
+EXTRA_FIELDS = [
+    "raw_ratings",
+    "listeners",
+]
+
 
 def csv2scps(csv_path, output_dir: Path):
-    df = pd.read_csv(csv_path)
+    df = pd.read_csv(csv_path, dtype=str)
     if "score" in df.columns:
+        # convert score to float
+        df["score"] = df["score"].astype(float)
         df["mos"] = df.groupby("wav_path")["score"].transform("mean")
-        del df["score"]
+        # make a raw_ratings column as list of raw ratings
+        if "listener_id" in df.columns:
+            df["raw_ratings"] = df.groupby("wav_path")["score"].transform(lambda x: ";".join(str(_) for _ in x))
+            df["listeners"] = df.groupby("wav_path")["listener_id"].transform(lambda x: ";".join(str(_) for _ in x))
+            del df["score"]
+            del df["listener_id"]
     unique_audios = set()
-    utt2sys, utt2audio_path, metric_to_utt2score = {}, {}, {}
+    utt2system, utt2sample, utt2audio_path, field_to_utt2value = {}, {}, {}, {}
     for _, row in tqdm(df.iterrows(), total=len(df), desc="Generating scp files"):
         audio_path = row["wav_path"]
         if audio_path in unique_audios:
             continue
         unique_audios.add(audio_path)
-        assert row["sample_id"] not in utt2sys, f"duplicate sample_id: {row['sample_id']}"
-        utt2sys[row["sample_id"]] = row["system_id"]
-        utt2audio_path[row["sample_id"]] = row["wav_path"]
+        system_id, sample_id = row["system_id"], row["sample_id"]
+        uttid = f"{system_id}:{sample_id}"
+        assert uttid not in utt2system, f"duplicate sample_id: {uttid}"
+        utt2system[uttid] = system_id
+        utt2sample[uttid] = sample_id
+        utt2audio_path[uttid] = row["wav_path"]
 
-        for metric in METRICS:
-            if metric not in row:
+        for key in METRICS + EXTRA_FIELDS:
+            if key not in row:
                 continue
-            if metric not in metric_to_utt2score:
-                metric_to_utt2score[metric] = {}
-            metric_to_utt2score[metric][row["sample_id"]] = round(float(row[metric]), 4)
+            if key not in field_to_utt2value:
+                field_to_utt2value[key] = {}
+            if isinstance(row[key], (float, int)):
+                field_to_utt2value[key][uttid] = round(float(row[key]), 4)
+            else:
+                field_to_utt2value[key][uttid] = row[key]
 
     uids = sorted(list(utt2audio_path.keys()))
-    with open(output_dir / "utt2sys", "w") as utt2sys_scp, open(output_dir / "wav.scp", "w") as wav_scp:
+    with (
+        open(output_dir / "utt2system", "w") as utt2sys_scp,
+        open(output_dir / "utt2sample", "w") as utt2sample_scp,
+        open(output_dir / "wav.scp", "w") as wav_scp,
+    ):
         for uid in uids:
-            utt2sys_scp.write(f"{uid} {utt2sys[uid]}\n")
+            utt2sys_scp.write(f"{uid} {utt2system[uid]}\n")
             wav_scp.write(f"{uid} {utt2audio_path[uid]}\n")
+            utt2sample_scp.write(f"{uid} {utt2sample[uid]}\n")
 
-    for metric, utt2score in metric_to_utt2score.items():
-        with open(output_dir / f"{metric}.scp", "w") as metric_scp:
+    for field, utt2value in field_to_utt2value.items():
+        with open(output_dir / f"{field}.scp", "w") as field_scp:
             for uid in uids:
-                metric_scp.write(f"{uid} {utt2score[uid]:.4f}\n")
+                if isinstance(utt2value[uid], str):
+                    field_scp.write(f"{uid} {utt2value[uid]}\n")
+                else:
+                    field_scp.write(f"{uid} {utt2value[uid]:.4f}\n")
 
 
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Make utt2sys, wav.scp, mos.scp from csv")
+    parser = argparse.ArgumentParser(description="Make utt2system, utt2sample, wav.scp, mos.scp from csv")
     parser.add_argument("csv_path", type=Path, help="Path to the input CSV file")
     parser.add_argument("output_dir", type=Path, help="Path to the output dir")
     args = parser.parse_args()

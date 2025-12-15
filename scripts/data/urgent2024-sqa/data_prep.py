@@ -21,7 +21,8 @@ def prepare_data(data: Path, split: str):
     items = []
     for phase in phases:
         for sample in tqdm(load_dataset("urgent-challenge/urgent2024-sqa", split=phase)):
-            submission_id, _, fileid = sample["sample_id"].split("_")[-3:]
+            submission_id = sample["system_id"].rsplit("_", 1)[1]
+            fileid = sample["sample_id"].rsplit("_", 1)[1]
             wav_file = data / phase / submission_id / f"{fileid}.flac"
             wav_file.parent.mkdir(parents=True, exist_ok=True)
             if not wav_file.exists():
@@ -29,8 +30,16 @@ def prepare_data(data: Path, split: str):
                 torchaudio.save(wav_file, samples.data, samples.sample_rate)
             del sample["audio"]
             sample["wav_path"] = wav_file.absolute().as_posix()
-            sample = {k: v for k, v in sample.items() if v is not None}
-            items.append(sample)
+            if "raw_ratings" in sample and sample["raw_ratings"] is not None:
+                raw_ratings = sample["raw_ratings"]
+                del sample["raw_ratings"]
+                for score in raw_ratings:
+                    sample_ = {k: v for k, v in sample.items() if v is not None}
+                    sample_["listener_id"] = None
+                    sample_["score"] = score
+                    items.append(sample_)
+            else:
+                items.append(sample)
     return items
 
 

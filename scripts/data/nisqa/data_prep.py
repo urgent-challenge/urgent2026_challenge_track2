@@ -111,11 +111,19 @@ def main():
     for line in tqdm(filelist, desc="Processing CSV metadata"):
         if len(line) == 0:
             continue
-        system_id = line["con"]
+        system_id = int(float(line["con"]))
         wav_path = line["filename_deg"]
         complete_wav_path = os.path.join(args.wavdir, wav_path)
         sample_id = os.path.splitext(wav_path)[0]
+
         score = float(line["mos"])
+
+        if "TRAIN" not in args.original_path and "VAL" not in args.original_path:
+            sample_id = sample_id.split("_", 1)[1]
+        else:
+            if sample_id.startswith("book"):
+                sample_id = os.path.splitext(line["filename_ref"])[0]
+                system_id = os.path.splitext(wav_path)[0].removeprefix(sample_id)[1:]
 
         # if resample and resample is necessary
         if args.resample and librosa.get_samplerate(complete_wav_path) != args.target_sampling_rate:

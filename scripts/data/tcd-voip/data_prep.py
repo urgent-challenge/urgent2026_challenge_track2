@@ -20,6 +20,7 @@ if __name__ == "__main__":
     df["wav_path"] = df["Filename"].apply(lambda x: os.path.join(args.wavdir, x))
     df["system_id"] = df["ConditionID"].astype(str).str.zfill(3)
     df["sample_id"] = df["Filename"].apply(lambda x: os.path.splitext(x)[0])
+    df["sample_id"] = df["sample_id"].apply(lambda x: x[5:])
 
     df["score"] = df["sample MOS"]
 

@@ -142,7 +142,7 @@ def main():
             "wav_path": os.path.realpath(wav_path),
             "score": score,
             "system_id": system_id,
-            "sample_id": sample_id,
+            "sample_id": sample_id.rsplit("_", 1)[0],
             "listener_id": listener_id,
         }
         if args.generate_listener_id:

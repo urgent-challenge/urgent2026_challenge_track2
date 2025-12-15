@@ -125,7 +125,7 @@ def main():
         if not os.path.exists(complete_wav_path):
             continue
         system_id = line["dataset"] + "-" + line["system"]
-        sample_id = system_id + "-" + os.path.basename(wav_path).replace(".wav", "")
+        sample_id = os.path.basename(wav_path).replace(".wav", "")
         score = float(line["value"])
         listener_id = line["annotator"]
 

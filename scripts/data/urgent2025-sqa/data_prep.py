@@ -21,7 +21,8 @@ def prepare_data(data: Path, split: str):
     items = []
     for phase in phases:
         for sample in tqdm(load_dataset("urgent-challenge/urgent2025-sqa", split=phase)):
-            submission_id, _, fileid = sample["sample_id"].split("_")[-3:]
+            submission_id = sample["system_id"].rsplit("_", 1)[1]
+            fileid = sample["sample_id"].rsplit("_", 1)[1]
             wav_file = data / phase / submission_id / f"{fileid}.flac"
             wav_file.parent.mkdir(parents=True, exist_ok=True)
             if not wav_file.exists():
@@ -37,7 +38,7 @@ def prepare_data(data: Path, split: str):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", type=Path, required=True)
-    parser.add_argument("--split", type=str, required=True, choices=["train"])
+    parser.add_argument("--split", type=str, required=True, choices=["train", "test"])
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     args.out.parent.mkdir(parents=True, exist_ok=True)

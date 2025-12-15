@@ -144,8 +144,8 @@ def main():
         snr = line["snr"]
         noise = line["noise"]
         system_id = f"{method}-SNR{snr}-{noise}"
-        sample_id = line["file_name"]
-        wav_path = os.path.join(args.wavdir, sample_id + ".wav")
+        sample_id = "TMHINT" + line["file_name"].split("TMHINT")[-1]
+        wav_path = os.path.join(args.wavdir, line["file_name"] + ".wav")
         if not wav_path in wav_files or not os.path.isfile(wav_path):
             continue
         if len(line["quality_score"]) == 0:
