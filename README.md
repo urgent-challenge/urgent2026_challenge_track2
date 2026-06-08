@@ -237,7 +237,7 @@ bash scripts/prepare_data.sh </path/to/db>
     <td>23</td>
     <td>13.80</td>
     <td>
-      <a href="https://huggingface.co/datasets/urgent-challenge/urgent2025-sqa">[Huggingface]</a>
+      <a href="https://huggingface.co/datasets/urgent-challenge/urgent2024-sqa">[Huggingface]</a>
     </td>
     <td>CC BY-NC-SA 4.0</td>
   </tr>
